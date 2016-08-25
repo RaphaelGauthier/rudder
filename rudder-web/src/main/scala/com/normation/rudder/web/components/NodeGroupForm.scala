@@ -173,13 +173,13 @@ class NodeGroupForm(
       "name" -> groupName.toForm_!,
       "rudderid" -> <div><b class="threeCol">Rudder ID: </b>{nodeGroup.id.value}</div>,
       "cfeclasses" -> <div>
-											  <a href="#" onclick={s"$$('#cfe-${nodeGroup.id.value}').toggle(300); return false;"}>
-												<b class="threeCol">Display CFEngine classes</b>
-												</a>
-											  <span class="twoCol" style="display: none" id={s"cfe-${nodeGroup.id.value}"}>
-											    {RuleTarget.toCFEngineClassName(nodeGroup.id.value)}<br/>
-											    {RuleTarget.toCFEngineClassName(nodeGroup.name)}
-											  </span></div>,
+        <a href="#" onclick={s"$$('#cfe-${nodeGroup.id.value}').toggle(300); return false;"}>
+        <b class="threeCol">Display CFEngine classes</b>
+        </a>
+        <span class="twoCol" style="display: none" id={s"cfe-${nodeGroup.id.value}"}>
+          {RuleTarget.toCFEngineClassName(nodeGroup.id.value)}<br/>
+          {RuleTarget.toCFEngineClassName(nodeGroup.name)}
+        </span></div>,
       "description" -> groupDescription.toForm_!,
       "container" -> groupContainer.toForm_!,
       "static" -> groupStatic.toForm_!,

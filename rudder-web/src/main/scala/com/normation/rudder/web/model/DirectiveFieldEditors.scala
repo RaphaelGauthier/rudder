@@ -36,7 +36,6 @@
 */
 
 package com.normation.rudder.web.model
-
 import com.normation.utils.Utils._
 import scala.xml._
 import net.liftweb.common._
@@ -74,11 +73,10 @@ class TextField(val id: String) extends DirectiveField {
   def get = _x
   def set(x: String) = { if (null == x) _x = "" else _x = x; _x }
   def toForm() = {
-    val attrs = if(isReadOnly) Seq(("readonly" -> "readonly")) else Seq()
-    val html  =
-      <div class="tw-bs">
+  val attrs = if(isReadOnly) Seq(("readonly" -> "readonly")) else Seq()
+  val html  =
+    <div class="tw-bs"></div>
 
-      </div>
     Full(SHtml.text(toClient, { x => parseClient(x) }, attrs:_*))
   }
   def manifest = manifestOf[String]
@@ -188,7 +186,6 @@ class SelectField(val id: String, items: Seq[ValueLabel]) extends DirectiveField
   def toForm() = {
     val valuesByLabel = items.map(_.reverse.tuple).toMap
     val labelsByValue = items.map(_.tuple).toMap
-
     val defaultLabels = values.map(labelsByValue.getOrElse(_,""))
     val labels = items.map(_.label)
     Full(SHtml.checkbox[String](labels, defaultLabels,
@@ -362,7 +359,6 @@ class DateField(format: DateTimeFormatter)(val id: String) extends DirectiveFiel
     val xml = (SHtml.text(toClient, { x => parseClient(x) }) % ("id" -> this.id)) ++
       Script(OnLoad(JsRaw("var init%s = $.datepicker.regional['%s']; init%s['showOn'] = 'both';jQuery('#%s').datepicker(init%s)".
         format(id, format.getLocale.getLanguage, id, id, id))))
-
     Full(xml)
   }
 

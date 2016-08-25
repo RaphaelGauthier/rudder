@@ -549,9 +549,9 @@ $(document).ready(function() {
 function checkMigrationButton(currentVersion,selectId) {
   var selectedVersion = $("#"+selectId+" option:selected" ).text()
   if (currentVersion === selectedVersion) {
-    $('#migrationButton').button( "option", "disabled", true );
+    $('#migrationButton').prop('disabled', true);
   } else {
-    $('#migrationButton').button( "option", "disabled", false );
+    $('#migrationButton').prop('disabled', false);
   }
 }
 
@@ -600,10 +600,21 @@ function updateHashString(key, value) {
   window.location.hash = "#" + JSON.stringify(hash);
 }
 
+function showHideTree(that,selector){
+  if($(that).hasClass('btn')){
+    $(that).find('i').toggleClass('fa-flip-horizontal');
+    $(that).toggleClass('toggle-on');
+  }
+  var tree = $(selector);
+  if ($(this).hasClass('toggle-on')) {
+    tree.removeClass('offcanvas');
+  }else{
+    tree.toggleClass('offcanvas');
+  }
+}
+
 $(document).ready(function() {
   correctButtons();
   $("a", "form").click(function() { return false; });
   createTooltip();
 });
-
-

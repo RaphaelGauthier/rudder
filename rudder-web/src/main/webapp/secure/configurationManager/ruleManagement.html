@@ -7,12 +7,11 @@
 
   <div data-lift="configuration.RuleManagement.head" ></div>
 
-  <div class="portlet">
-    <div class="portlet-content">
-      <div id="viewAllRulesZone">
+  <div class="portlet tw-bs">
+    <div class="portlet-content row">
+      <div id="viewAllRulesZone" class="col-lg-12">
         <div data-lift="configuration.RuleManagement.viewRules" ></div>
       </div>
-      <hr class="spacer" />
       <div id="editRuleZonePortlet" class="inner-portlet nodisplay">
         <div class="page-title">Rule details</div>
         <div class="inner-portlet-content">
@@ -20,18 +19,13 @@
         </div>
       </div>
     </div>
-    
-    <div class="tw-bs">  
-        <div id="createRulePopup" class="modal fade">
-            <lift:ignore>
-                This div gets the content of the createRule injected within
-            </lift:ignore>
-            <div id="createRuleContainer"></div>
-        </div>  
+    <div id="createRulePopup" class="modal fade">
+      <lift:ignore>
+        This div gets the content of the createRule injected within
+      </lift:ignore>
+      <div id="createRuleContainer"></div>
     </div>
-	<div class="tw-bs">  
-    	<div id="createRuleCategoryPopup" class="modal fade"></div>
-  	</div>
+    <div id="createRuleCategoryPopup" class="modal fade"></div>
   </div>
 </lift:surround>
 

@@ -215,20 +215,19 @@ class RuleDisplayer (
 
    ruleCategoryTree match {
      case Full(ruleCategoryTree) =>
-       <div style="padding:10px;">
-         <div style="float:left; width: 20%; overflow:auto">
+
+         <div style="float:left; width: 20%;">
            <div class="page-title">Categories</div>
            <div class="inner-portlet-content" id="categoryTreeParent">
                {viewCategories(ruleCategoryTree)}
            </div>
          </div>
-         <div style="float:left; width:78%;padding-left:2%;">
+         <div style="float:left; width:78%;margin-left:2%;">
            <div class="page-title" id="categoryDisplay">Rule</div>
            <div class="inner-portlet-content" id={gridId}>
              {viewRules}
            </div>
-        </div>
-      </div> ++ Script(JsRaw(s"""
+        </div> ++ Script(JsRaw(s"""
                   var include = true;
                   var filter = "";
                   var column = ${columnToFilter};"""
@@ -237,9 +236,7 @@ class RuleDisplayer (
        val fail = eb ?~! "Could not get root category"
        val msg = s"An error occured while fetching Rule categories , cause is ${fail.messageChain}"
        logger.error(msg)
-       <div style="padding:10px;">
-         <div class="error">{msg}</div>
-       </div>
+       <div class="error">{msg}</div>
    }
   }
 
@@ -257,9 +254,7 @@ class RuleDisplayer (
        val fail = eb ?~! "Could not get root category"
        val msg = s"An error occured while fetching Rule categories , cause is ${fail.messageChain}"
        logger.error(msg)
-       <div style="padding:10px;">
-         <div class="error">{msg}</div>
-       </div>
+       <div class="error">{msg}</div>
     }
   }
 
@@ -291,9 +286,7 @@ class RuleDisplayer (
           val fail = eb ?~! "Could not get root category"
           val msg = s"An error occured while fetching Rule categories , cause is ${fail.messageChain}"
           logger.error(msg)
-          <div style="padding:10px;">
-            <div class="error">{msg}</div>
-          </div>
+          <div class="error">{msg}</div>
      }
       SetHtml(htmlId_popup, popupHtml) &
       JsRaw( s""" createPopup("${htmlId_popup}") """)
@@ -313,9 +306,7 @@ class RuleDisplayer (
             val fail = eb ?~! "Could not get root category"
             val msg = s"An error occured while fetching Rule categories , cause is ${fail.messageChain}"
             logger.error(msg)
-            <div style="padding:10px;">
             <div class="error">{msg}</div>
-          </div>
        }
       SetHtml(htmlId_popup, popupHtml) &
       JsRaw( s""" createPopup("${htmlId_popup}") """)

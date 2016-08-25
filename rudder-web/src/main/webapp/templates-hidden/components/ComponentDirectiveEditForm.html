@@ -50,86 +50,78 @@
           </div>
         </div>
       </div>
-      <hr class="spacer"/>
   </lift:authz>
 
 
 		<div id="directiveInfoTab" class="unfoldedSection" onclick="$('#directiveInfo').toggle(400); $('#directiveInfoTab').toggleClass('foldedSection');$('#directiveInfoTab').toggleClass('unfoldedSection');">
 		  <div class="section-title">Directive information</div>
 		</div>
-		<div id="directiveInfo"  >
-		   <hr class="spacer" />
-      	   <div id="nameField">
+       <div class="tw-bs">
+	     <div id="directiveInfo"  class="row no-margin">
+           <div id="nameField" class="form-group row">
              Here comes the name field
            </div>
-           <hr class="spacer" />
-           <div id="shortDescriptionField">
+           <div id="shortDescriptionField" class="form-group row">
              Here comes the shortDescription field
            </div>
-           <hr class="spacer" />
-           <div id="longDescriptionField">
+           <div id="longDescriptionField" class="form-group row">
              Here comes the longDescription field
            </div>
-           <hr class="spacer" />
-           <div id="priority">
+           <div id="priority" class="form-group row">
              Here come the priority field
            </div>
-           <hr class="spacer" />
-           <div id="version">
+           <div id="version" class="form-group row">
              Here come the version field
            </div>
-           <hr class="spacer" />
-           <div id="migrate">
-             Here come the version field
+           <div class="row">
+             <div id="migrate" class="form-group col-lg-2 col-xs-12">
+               Here come the version field
+             </div>
            </div>
-           <hr class="spacer" />
-      	   <div class="directiveTechnicalInfo" id="showTechnical"></div>
-           <div id="technicalDetails" style="display:none">
+           <div class="directiveTechnicalInfo row">
+             <div id="showTechnical" class="col-xs-12"></div>
+           </div>
+           <div id="technicalDetails" style="display:none" class="col-xs-12 well">
              <div class="directiveTechnicalInfo">
                <b class="threeCol">Technique name: </b>
                <span id="techniqueName">
                  Technique name
                </span>
              </div>
-             <hr class="spacer"/>
              <div class="directiveTechnicalInfo">
                <b class="threeCol">Technique description: </b>
                <span id="techniqueDescription">
                  Technique description
                </span>
              </div>
-             <hr class="spacer"/>
              <div class="directiveTechnicalInfo">
                <b class="threeCol">Technique unicity: </b>
                <span id="isSingle">
                  isSingle
                </span>
              </div>
-             <hr class="spacer"/>
              <div class="directiveTechnicalInfo">
                <b class="threeCol">Supported operating systems: </b>
                <div id="compatibilityOs">
                  System Compatibility
                </div>
              </div>
-             <hr class="spacer"/>
              <div class="directiveTechnicalInfo">
                <b class="threeCol">Supported agents: </b>
                <div id="compatibilityAgent">
                  System Compatibility
                </div>
              </div>
-             <hr class="spacer"/>
              <div class="directiveTechnicalInfo">
                <b class="threeCol">Directive Rudder ID: </b>
                <span id="rudderID">
                  Here comes the rudder ID
                </span>
              </div>
-             <hr class="spacer"/>
            </div>
          <br/>
          </div>
+       </div>
         <div  id="directiveParametersTab" class="unfoldedSection" onclick="$('#parameters').toggle(400); $('#directiveParametersTab').toggleClass('foldedSection');$('#directiveParametersTab').toggleClass('unfoldedSection');">
           <div class="section-title">Parameters</div>
           <div id="notifications"></div>
@@ -143,18 +135,30 @@
 		 </div>
     <hr class="spacer"/>
 
-	<lift:authz role="directive_edit">
-	<div class="fixed-footer directive-footer">
-	      <div id="removeAction" style="float:left">
+  <div class="tw-bs content-header" id="directive-toolbar">
+    <div class="col-xs-4">
+      <h1>
+        <button type="button" class="toggleTree btn btn-default" onclick="showHideTree(this,'.directiveTree')">
+          <i class="fa fa-caret-left" aria-hidden="true"></i>
+        </button>
+      </h1>
+    </div>
+    <lift:authz role="directive_edit">
+      <div class="col-xs-8">
+        <div class="toolbar-actions btn-toolbar text-center text-right-sm" role="toolbar">
+          <div class="btn-group" role="group" aria-label="...">
+            <button id="removeAction"></button>
+            <button id="desactivateAction"></button>
+            <button id="clone">[Clone]</button>
+          </div>
+          <div class="btn-group" role="group" aria-label="...">
+            <button id="save">Save</button>
+          </div>
+        </div>
       </div>
-      <div id="desactivateAction" style="float:left; margin-left:20px;">
-      </div>
-      <button id="clone" style="float:left">[Clone]</button>
-      <div class="cpiefsave">
-        <button id="save">Save</button>
-      </div>
-  </div>
     </lift:authz>
+  </div>
+
     <br/>
     </div>
     <div class="tw-bs">
@@ -176,8 +180,7 @@
 </component:form>
 
 <component:informationTab>
-<div class="page-title">Directive information</div>
-      <hr class="spacer" />
+    <div class="page-title">Directive information</div>
       <div id="nameField">
         Here comes the name field
       </div>

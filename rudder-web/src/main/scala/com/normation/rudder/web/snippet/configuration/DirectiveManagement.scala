@@ -170,7 +170,7 @@ class DirectiveManagement extends DispatchSnippet with Loggable {
    */
   def displayDirectiveLibrary(workflowEnabled: Boolean): NodeSeq = {
     (
-      <div id={htmlId_activeTechniquesTree} class="col-xs-12">{
+      <div id={htmlId_activeTechniquesTree} class="row">{
           (directiveLibrary,rules) match {
             case (Full(activeTechLib), Full(allRules)) =>
               val usedDirectives = allRules.flatMap { case r =>
@@ -215,7 +215,6 @@ class DirectiveManagement extends DispatchSnippet with Loggable {
         } catch(e) {
           directiveId = '';
         }
-
         buildDirectiveTree('#${htmlId_activeTechniquesTree}', [ directiveId ], '${S.contextPath}', 1);
         createTooltip();
     """)
@@ -231,28 +230,25 @@ class DirectiveManagement extends DispatchSnippet with Loggable {
   def initTechniqueDetails(workflowEnabled: Boolean) : MemoizeTransform = SHtml.memoize {
     "#techniqueDetails *" #> ( currentTechnique match {
       case None =>
-        ".page-title *" #> "Usage" &
+        ".jumbotron-title *" #> "No directive selected" &
         "#details *" #> {
-        <div class="deca">
-          <p><em>Directives</em> are displayed in the tree of
-          <a href="/secure/administration/techniqueLibraryManagement">
-            <em>Active Techniques</em>
-          </a>,
-          grouped by categories.</p>
-          <ul>
-            <li>Fold/unfold category folders;</li>
-            <li>Click on the name of a <em>Technique</em> to see its description;</li>
-            <li>
-              Click on the name of a <em>Directive</em> to see its configuration items.
-              Details of the <em>Technique</em> it's based on will also be displayed.
-            </li>
-          </ul>
-          <p>Additional <em>Techniques</em> may be available through the
-            <a href="/secure/administration/techniqueLibraryManagement">
-              Techniques screen
-            </a>.
+          <p>
+            Please, select one in the Directive library.
+            <a class="toggleTree toggle-on btn btn-default btn-large"  href="#directiveTree" style="margin-left:20px; font-size:20px;">
+              <span class="fa fa-long-arrow-left"></span>
+            </a>
           </p>
-        </div>
+          <hr/>
+          <div>
+            <h2>Usage</h2>
+            <ol>
+              <li>Directives are displayed in the tree of <a href="/secure/administration/techniqueLibraryManagement">Active Techniques</a> , grouped by categories.</li>
+              <li>Fold/unfold category folders;</li>
+              <li>Click on the name of a Technique to see its description;</li>
+              <li>Click on the name of a Directive to see its configuration items. Details of the Technique it's based on will also be displayed.</li>
+              <li>Additional Techniques may be available through the <a href="/secure/administration/techniqueLibraryManagement">Techniques screen</a> .</li>
+            </ol>
+          </div>
       }
 
       case Some((fullActiveTechnique,version)) =>

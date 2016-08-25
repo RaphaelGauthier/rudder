@@ -131,12 +131,12 @@ class DirectiveEditForm(
       case Full(pe) => pe
       case Empty => {
         val errMsg = "Can not initialize the parameter editor for Directive %s " +
-        		"(template %s). No error returned"
+            "(template %s). No error returned"
         throw new IllegalArgumentException(errMsg.format(directive.id, technique.id))
       }
       case Failure(m, _, _) => {
         val errMsg = "Can not initialize the parameter editor for Directive %s " +
-        		"(template %s). Error message: %s"
+            "(template %s). Error message: %s"
         throw new IllegalArgumentException(errMsg.format(directive.id, technique.id, m))
       }
     }
@@ -207,7 +207,7 @@ class DirectiveEditForm(
       val agentCompEmpty : NodeSeq =
         <span>
           Can be used on any agent.
-	      </span>
+        </span>
       technique.compatible match {
         case None =>
           (osCompEmpty,agentCompEmpty)
@@ -226,7 +226,7 @@ class DirectiveEditForm(
             case agent =>
                 <span>
                   {agent.mkString(", ")}
-	              </span>
+                </span>
           }
           (osComp,agentComp)
       }
@@ -248,17 +248,14 @@ class DirectiveEditForm(
       "#disactivateButtonLabel" #> {
         if (directive.isEnabled) "Disable" else "Enable"
        } &
-       "#removeAction *" #> {
-         SHtml.ajaxSubmit("Delete", () => onSubmitDelete(),("class" ,"dangerButton"))
+       "#removeAction" #> {
+         SHtml.ajaxSubmit("Delete", () => onSubmitDelete(),("class" ,"btn btn-danger"))
        } &
-       "#desactivateAction *" #> {
+       "#desactivateAction" #> {
          val status = directive.isEnabled ? ModificationValidationPopup.Disable | ModificationValidationPopup.Enable
-         SHtml.ajaxSubmit(status.displayName, () => onSubmitDisable(status))
+         SHtml.ajaxSubmit(status.displayName, () => onSubmitDisable(status), ("class" ,"btn btn-default"))
        } &
-       "#clone" #> SHtml.ajaxButton(
-            { Text("Clone") },
-            { () =>  clone() },
-            ("class", "autoWidthButton twoColumns twoColumnsRight"),("type", "button")
+       "#clone" #> SHtml.ajaxButton({Text("Clone")}, () =>  clone(), ("class", "btn btn-default"),("type", "button")
        ) &
        //form and form fields
       "#techniqueName" #>
@@ -273,10 +270,10 @@ class DirectiveEditForm(
       "#longDescriptionField" #> piLongDescription.toForm_! &
       "#priority" #> piPriority.toForm_! &
       "#version" #> versionSelect.toForm_! &
-      "#migrate" #> migrateButton(directiveVersion.is,"Migrate") &
+      "#migrate *" #> migrateButton(directiveVersion.is,"Migrate") &
       "#parameters" #> parameterEditor.toFormNodeSeq &
       "#directiveRulesTab *" #> ruleDisplayer &
-      "#save" #> { SHtml.ajaxSubmit("Save", onSubmitSave _) % ("id" -> htmlId_save) } &
+      "#save" #> { SHtml.ajaxSubmit("Save", onSubmitSave _) % ("id" -> htmlId_save) % ("class","btn btn-success") } &
       "#notifications *" #> updateAndDisplayNotifications() &
       "#showTechnical *" #> SHtml.a(() => JsRaw("$('#technicalDetails').show(400);") & showDetailsStatus(true), Text("Show technical details"), ("class","listopen")) &
       "#isSingle *" #> showIsSingle &
@@ -378,7 +375,7 @@ class DirectiveEditForm(
 
   private[this] val piShortDescription = {
     new WBTextField("Short description", directive.shortDescription) {
-      override def className = "twoCol"
+    override def className = "twoCol"
     override def labelClassName = "threeCol directiveInfo"
       override def setFilter = notNull _ :: trim _ :: Nil
       override val maxLen = 255
@@ -403,21 +400,20 @@ class DirectiveEditForm(
       override val displayHtml =
         <div>
         <b>Priority:</b>
-        <span class="tw-bs">
-					<span tooltipid="priorityId" class="ruddericon tooltipable glyphicon glyphicon-question-sign" title=""></span>
+          <span class="tw-bs">
+          <span tooltipid="priorityId" class="ruddericon tooltipable glyphicon glyphicon-question-sign" title=""></span>
           <div class="tooltipContent" id="priorityId">
-          	<h4> Priority </h4>
-						Priority determines which <b> unique </b> Directive will be applied.
-						<br/>
-						Unique Directives can be applied only once (ie. Time Settings), so only the highest priority will be appllied.
-						<br/>
-						Highest Priority is 0
+            <h4> Priority </h4>
+            Priority determines which <b> unique </b> Directive will be applied.
+            <br/>
+            Unique Directives can be applied only once (ie. Time Settings), so only the highest priority will be appllied.
+            <br/>
+            Highest Priority is 0
           </div>
-			  </span>
-      </div>
+          </span>
+        </div>
       override def className = "twoCol"
       override def labelClassName = "threeCol directiveInfo"
-
     }
 
   def showDeprecatedVersion (version : TechniqueVersion) = {
@@ -438,9 +434,9 @@ class DirectiveEditForm(
       , Seq(("id" -> "selectVersion"))
     ) {
 
-      override def className = "twoCol"
-      override def labelClassName = "threeCol directiveInfo"
-    }
+    override def className = "twoCol"
+    override def labelClassName = "threeCol directiveInfo"
+  }
 
   private[this] val formTracker = {
     val l = List(piName, piShortDescription, piLongDescription) //++ crReasons

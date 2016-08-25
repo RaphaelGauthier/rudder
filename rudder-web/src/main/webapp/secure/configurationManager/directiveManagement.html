@@ -34,19 +34,16 @@
   text-align: center;
 }
 
-#editForm {
-  padding-bottom:70px;
-}
-
 </style>
 
 </head>
 
 <div data-lift="configuration.DirectiveManagement.head"></div>
 
-<div class="tw-bs col-sm directiveTree">
+<div class="tw-bs">
+<div class="col-lg-4 col-md-5 col-sm-6 col-xs-12 directiveTree">
   <div class="page-title">Directive Library</div>
-  <div id="activeTechniquesTree_actions_zone"  >
+  <div id="activeTechniquesTree_actions_zone" class="row">
     <div class="col-xs-12 tree">
       <div class="filter-tree">
         <div class="input-group">
@@ -69,79 +66,81 @@
     </div>
     <div class="clearfix "></div>
   </div>
-
+  <hr/>
   <div data-lift="configuration.DirectiveManagement.userLibrary" ></div>
 
 </div>
 
-<div class="col col-xl" id="directiveDetails">
+<div class="col col-lg-8 col-md-7 col-sm-6 col-xs-12" id="directiveDetails">
 
   <div data-lift="configuration.DirectiveManagement.techniqueDetails">
-    <div id="techniqueDetails" ng-app="techniqueDetails"   >
-      <div class="page-title">Technique information</div>
-      <div id="details">
-        <div id="directiveIntro">
-          The Directive <b class="directive">[Directive]</b> is based on following Technique:
-        </div>
-        <div>
-        <h3><span id="techniqueName">[Technique name]</span></h3>
-        </div>
-        <br/>
-        <fieldset class="deca">
-          <legend>Description</legend>
-          <span id="techniqueDescription">[technique.description]</span>
-        </fieldset>
-        <div class="groupDiv">
+    <div class="tw-bs">
+      <div id="techniqueDetails" ng-app="techniqueDetails" class="jumbotron rudder-jumbotron">
+        <h1 class="jumbotron-title">Technique information</h1>
+        <div id="details">
+          <div id="directiveIntro">
+            The Directive <b class="directive">[Directive]</b> is based on following Technique:
+          </div>
+          <div>
+          <h3><span id="techniqueName">[Technique name]</span></h3>
+          </div>
+          <br/>
           <fieldset class="deca">
-            <legend>Characteristics</legend>
-            <p id="techniqueLongDescription">[technique.longDescription]</p>
-            <p id="isSingle">[Unique Technique]</p>
-            <p><span id="compatibility">[Supported operating systems : debian-5]</span></p>
+            <legend>Description</legend>
+            <span id="techniqueDescription">[technique.description]</span>
           </fieldset>
+          <div class="groupDiv">
+            <fieldset class="deca">
+              <legend>Characteristics</legend>
+              <p id="techniqueLongDescription">[technique.longDescription]</p>
+              <p id="isSingle">[Unique Technique]</p>
+              <p><span id="compatibility">[Supported operating systems : debian-5]</span></p>
+            </fieldset>
+          </div>
+          <fieldset class="deca" id="techniqueVersion" ng-controller="techniqueVersion">
+              <legend>Available versions</legend>
+            <table id="versionTable">
+              <thead>
+                <tr>
+                  <th>Version</th>
+                  <th>Last updated on</th>
+                  <lift:authz role="directive_write">
+                    <th>Use this version</th>
+                  </lift:authz>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="technique in techniques" ng-hide="display(technique)">
+                  <td class="tw-bs">{{technique.version}}
+                    <span ng-if="technique.isDeprecated" title="" tooltipid="version_{{$index}}" class="glyphicon glyphicon-info-sign text-danger deprecatedTechniqueIcon tooltipable"></span>
+                    <div ng-if="technique.isDeprecated" class="tooltipContent" id="version_{{$index}}">
+                      <div>Deprecated: {{technique.deprecationMessage}}</div>
+                    </div>
+                  </td>
+                  <td>{{technique.acceptationDate}}</td>
+                  <lift:authz role="directive_write">
+                    <td> <input type="button" ng-click="technique.action()" value="Create Directive" class="btn btn-default"/></td>
+                  </lift:authz>
+                </tr>
+              </tbody>
+              </table>
+                <input id="displayDeprecation" type="checkbox" ng-model="displayDeprecated" /> <label for="displayDeprecation">Display deprecated Technique versions</label>
+                <div style="text-align: center;">
+                  <lift:authz role="directive_write">
+                    <input type="button" id="addButton" ng-click="techniques[techniques.length-1].action()" value="Create with latest version" class="btn btn-default"/>
+                  </lift:authz>
+                </div>
+              </fieldset>
+            </div>
+          </div>
         </div>
-        <fieldset class="deca" id="techniqueVersion" ng-controller="techniqueVersion">
-            <legend>Available versions</legend>
-          <table id="versionTable">
-            <thead>
-              <tr>
-                <th>Version</th>
-                <th>Last updated on</th>
-                <lift:authz role="directive_write">
-                  <th>Use this version</th>
-                </lift:authz>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="technique in techniques" ng-hide="display(technique)">
-                <td class="tw-bs">{{technique.version}}
-                  <span ng-if="technique.isDeprecated" title="" tooltipid="version_{{$index}}" class="glyphicon glyphicon-info-sign text-danger deprecatedTechniqueIcon tooltipable"></span>
-                  <div ng-if="technique.isDeprecated" class="tooltipContent" id="version_{{$index}}">
-                    <div>Deprecated: {{technique.deprecationMessage}}</div>
-                  </div>
-                </td>
-                <td>{{technique.acceptationDate}}</td>
-                <lift:authz role="directive_write">
-                  <td> <input type="button" ng-click="technique.action()" value="Create Directive" /></td>
-                </lift:authz>
-               </tr>
-             </tbody>
-           </table>
-           <input id="displayDeprecation" type="checkbox" ng-model="displayDeprecated" /> <label for="displayDeprecation">Display deprecated Technique versions</label>
-         <div style="text-align: center;">
-           <lift:authz role="directive_write">
-             <input type="button" id="addButton" ng-click="techniques[techniques.length-1].action()" value="Create with latest version"/>
-           </lift:authz>
-         </div>
-       </fieldset>
-       </div>
-     </div>
-   </div>
+      </div>
 
    <div class="directiveDetails">
      <div data-lift="configuration.DirectiveManagement.showDirectiveDetails" ></div>
    </div>
 </div>
-
+</div>
 <div id="createDirectivePopup" class="nodisplay">
   <lift:ignore>
     This div gets the content of the createDirective injected within

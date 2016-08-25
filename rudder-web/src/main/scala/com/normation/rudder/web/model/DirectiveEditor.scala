@@ -106,7 +106,6 @@ trait DirectiveField extends BaseField with SectionChildField {
 
   def manifest: Manifest[ValueType]
   override def required_? = true
-
   // deprecated but has to be defined
   def is = get
 
@@ -178,7 +177,7 @@ trait DirectiveField extends BaseField with SectionChildField {
   def display(value: NodeSeq) = {
     <tr>
       <td class="tw-bs" colspan="2">
-      <span>{ if (optional) displayName else <b>{ displayName}</b> } {tooltipElem} {if (optional) <span class="tw-bs"> - <small class="greyscala">Optional</small></span>}</span>
+        <span>{ if (optional) displayName else <b>{ displayName}</b> } {tooltipElem} {if (optional) <span class="tw-bs"> - <small class="greyscala">Optional</small></span>}</span>
       </td>
       <td class="directiveVarValue">{ value }</td>
     </tr>
@@ -324,15 +323,13 @@ case class SectionFieldImp(
     if(childrenXml.isEmpty) NodeSeq.Empty
     else
       <tr><td colspan="2">
-        <div>
-        <div class="section-title">Section: { name }</div>
-          <table class="directiveSectionDisplay">
-            <tbody>
-              { childrenXml }
-            </tbody>
-          </table>
+         <div>
+           <div class="section-title">Section: { name }</div>
+           <div class="directiveSectionDisplay">
+             { childrenXml }
+           </div>
         </div>
-      </td></tr>
+     </td></tr>
   }
 }
 

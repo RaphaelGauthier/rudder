@@ -85,7 +85,7 @@ div.innerDetails {
 #node_summary #nodeDetails {
  float:left;
  width:50%;
- border-right : 2px #b2b2b2 solid;
+ border-right : 2px #e5e5e5 solid;
 }
 
 #node_summary #nodeGroups {
@@ -620,17 +620,6 @@ table.dataTable td img, table.dataTable th img {
   margin-top: 10px;
 }
 
-.dataTables_wrapper_top {
-  padding: 6px;
-  overflow: hidden;
-  display: block;
-  border-top: 1px solid #B4B3A8;
-  border-left: 1px solid #B4B3A8;
-  border-right: 1px solid #B4B3A8;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-}
-
 table.noMarginGrid {
   border-left : 0 ;
     border-right : 0 ;
@@ -754,6 +743,7 @@ table.noMarginGrid {
 
 .variableDefinition {
   margin: 3px;
+  margin-top:0;
   padding:3px;
   font-size: 12px;
   font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
@@ -819,15 +809,22 @@ div.foldableSection div.section-title {
   cursor: pointer;
 }
 
-div.unfoldedSection div.section-title:before {
-  content: url("../../images/tableau/flecheBasGris.png");
-  padding-right: 3px;
+div.section-title:before{
+  content: url("../../images/tableau/flecheDroiteGris.png");
+  margin-right: 10px;
+  transition-duration: .2s;
+  display: inline-block;
+  line-height: 4px;
+}
+div.unfoldedSection>div.section-title:before {
+  -webkit-transform:rotate(90deg);
+  -ms-transform:rotate(90deg);
+  -moz-transform:rotate(90deg);
+  -webkit-transform:rotate(90deg);
+  -o-transform:rotate(90deg);
+  transform:rotate(90deg);
 }
 
-div.foldedSection div.section-title:before {
-  content: url("../../images/tableau/flecheDroiteGris.png");
-  padding-right: 3px;
-}
 #querySearchSection:hover{
     cursor: pointer;
 }
@@ -935,10 +932,10 @@ padding:0 20px;
 }
 
 .nodeheadercontent {
-    color: #FFFFFF;
+    color: #333;
     display: inline-block;
      padding : 3px 10px;
-     background-color: #2E2D2D;
+     background-color: #e5e5e5;
 }
 }
 .paddscala{
@@ -1372,24 +1369,6 @@ p img {
    background: none;
 }
 
-.page-title {
-  font-size: 17px;
-  font-weight: bold;
-  cursor: default;
-  background: none;
-  border-bottom: 1px solid #F79D10;
-  padding: 5px 0 2px 5px;
-  text-transform:uppercase;
-}
-
-.section-title {
-  font-size: 15px;
-  cursor: default;
-  background: none;
-  border-bottom: 1px solid #F79D10;
-  padding: 5px 0 2px 5px;
-}
-
 .inner-portlet-content {
   padding: 5px 0 2px 5px;
 }
@@ -1397,9 +1376,6 @@ p img {
 .arrondishaut {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-}
-
-*html .portlet-header {
 }
 
 .inner-portlet {
@@ -1656,7 +1632,7 @@ td.complianceTd, td.parametersTd {
 
 /* others */
 
-.errorscala{
+.errorscala{bureau
   border-bottom:1px solid red;
   cursor:pointer;
 }
@@ -2349,7 +2325,7 @@ img.targetIcon {
 
 .targetContainer {
   border      : 1px solid #B4B3A8;
-  padding-top : 5px
+  padding-top : 5pxTssssssssssssss :p
 }
 
 .targetHeader {
@@ -2454,12 +2430,6 @@ table.directiveGroupDef, table.directiveVarDef, table.directiveSectionDef {
 input[type="number"] {
     padding: 5px 0 5px 5px;
     margin-top:-5px;
-}
-
-#clone {
-  margin-left:20px;
-  padding-right: 40px;
-  padding-left: 40px;
 }
 
 * {
@@ -2596,7 +2566,7 @@ label span.text-fit{
 .jstree-default .jstree-icon:empty {
   width: 20px;
   height: 20px;
-  line-height: 20px;
+  line-height: 24px;
 }
 .jstree-default.jstree-rtl .jstree-node {
   margin-right: 20px;
@@ -2629,9 +2599,18 @@ label span.text-fit{
 }
 
 .jstree .fa.jstree-icon {
-    color : #999
+    color : #999;
 }
-
+.jstree .jstree-anchor:hover > .fa.jstree-icon.fa-folder:before {
+  content: "\f07c";
+}
+.jstree .jstree-anchor > .fa.jstree-icon.fa-gear:before {
+  transition-duration:.5s;
+    display:inline-block;
+}
+.jstree .jstree-anchor:hover > .fa.jstree-icon.fa-gear:before {
+  transform:rotate(48deg);
+}
 .jstree.tw-bs {
 	font-size : 12px;
 } 
