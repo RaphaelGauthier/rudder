@@ -102,7 +102,9 @@
             <script type="text/ng-template" id="quicksearch.html">
               <div class="angucomplete-holder" ng-class="{'angucomplete-dropdown-visible': showDropdown};">
                 <div class="input-group group-search" ng-class="{'open':searchStr.length>0}">
-                  
+                  <label class="input-group-addon" id="search-addon" for="searchInput">
+                    <span class="glyphicon glyphicon-search"></span>
+                  </label>
                   <input ng-model="searchStr"
                     ng-disabled="disableInput"
                     type="text"
@@ -115,9 +117,9 @@
                     autocorrect="off"
                     autocomplete="off"
                     ng-change="inputChangeHandler(searchStr);$parent.refreshFilterSearch(searchStr)"/>
-          <div class="input-group-btn">
-                  <span ng-class="{noRemove:!searchStr}" class="input-group-addon" id="help-search"><span ng-click="$parent.setValueSearchInput('');$parent.refreshFilterSearch(searchStr);" class="glyphicon glyphicon-remove"></span></span>
-                </div>
+                  <label class="input-group-addon" id="empty-search" for="searchInput">
+                    <span ng-class="{noRemove:!searchStr}" ng-click="$parent.setValueSearchInput('');$parent.refreshFilterSearch(searchStr);" class="glyphicon glyphicon-remove"></span>
+                  </label>
                   <ul class="dropdown-menu dropdown-search angucomplete-dropdown dropdown-menu-right" ng-show="showDropdown">
                     <li class="dropdown-header">
                       <div class="row no-margin">
