@@ -50,6 +50,7 @@ var bootstrapAffix = $.fn.affix.noConflict();
 var bootstrapModal = $.fn.modal.noConflict();
 $.fn.bsModal = bootstrapModal;
 $.fn.bsTooltip = bootstrapTooltip;
+
 /**
  * Instanciate the tooltip
  * For each element having the "tooltipable" class, when hovering it will look for it's
@@ -646,4 +647,39 @@ function showFileManager(idField){
 function hideFileManager(){
   $(document).off('keydown.closeWindow');
   $("angular-filemanager").remove();
+}
+
+//add a new style 'foo'
+$.notify.addStyle('rudder', {
+  html:
+    "<div>" +
+      "<div class='clearfix'>" +
+        "<div data-notify-html='title'/>" +
+        "<div class='message' data-notify-html='message'/>" +
+      "</div>" +
+    "</div>"
+});
+
+function showNotification(className, message){
+  var titleNotification = $("<h4/>");
+  var autohide = false;
+  if(className == "error"){
+    titleNotification.html("<span class='fa fa-exclamation-triangle'></span>Error...");
+  }else if(className == "warning"){
+    titleNotification.html("<span class='fa fa-exclamation'></span>Warning");
+  }else{
+    titleNotification.html("<span class='fa fa-check'></span>Success!");
+    autohide = true;
+  }
+  $.notify({
+    title          : titleNotification
+  , message        : message
+  }, {
+    style          : 'rudder'
+  , globalPosition : 'bottom right'
+  , showDuration   : 200
+  , className      : className
+  , autoHide       : autohide
+  , autoHideDelay  : 7000
+  });
 }

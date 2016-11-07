@@ -1,0 +1,34 @@
+.tw-bs.notifyjs-corner{
+	background-color:transparent;
+}
+
+.notifyjs-rudder-base {
+  max-width: 400px;
+  padding: 15px;
+  border-radius: 4px;
+  color: #fff;
+  cursor:pointer;
+}
+.notifyjs-rudder-base.notifyjs-rudder-success{
+	background: #9bc832;
+  border: 1px solid #8db52f;
+}
+.notifyjs-rudder-base.notifyjs-rudder-error{
+  background: #c9302c;
+  border: 1px solid #b52925;
+}
+.notifyjs-rudder-base.notifyjs-rudder-warning{
+  background: #ff7125;
+  border: 1px solid #e26421;
+}
+.notifyjs-rudder-base h4{
+  margin-top: 0;
+}
+
+.notifyjs-rudder-base h4 > span{
+  margin-right: 10px;
+}
+
+.notifyjs-rudder-base .title {
+  float: left;
+}

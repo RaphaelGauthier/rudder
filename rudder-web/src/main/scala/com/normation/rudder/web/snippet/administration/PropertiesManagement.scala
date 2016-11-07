@@ -121,9 +121,7 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
       configService.set_rudder_ui_changeMessage_mandatory(mandatory).foreach(updateOk => initMandatory = Full(mandatory))
 
       configService.set_rudder_ui_changeMessage_explanation(explanation).foreach(updateOk => initExplanation = Full(explanation))
-      S.clearCurrentNotices
-      S.notice("updateChangeMsg","Change audit logs configuration correctly updated")
-      check()
+      JsRaw("""showNotification('success',"Change audit logs configuration correctly updated")""") & check()
     }
 
     // Check if there is no modification
@@ -136,14 +134,7 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
     def emptyString = explanation.trim().length==0
     // Check that there is some modification to enabled/disable save
     def check() = {
-      if(!noModif){
-        if(emptyString){
-          S.error("updateChangeMsg","The message field cannot be empty.")
-        }else{
-          S.notice("updateChangeMsg","")
-        }
-      }
-      Run(s"""$$("#changeMessageSubmit").prop("disabled",${noModif||emptyString});""")
+      Run(s"""if((${!noModif})&&(${emptyString})){showNotification('warning',"The message field cannot be empty.")};$$("#changeMessageSubmit").prop("disabled",${noModif||emptyString});""")
     }
 
     // Initialisation of form
@@ -274,8 +265,7 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
       configService.set_rudder_workflow_enabled(enabled).foreach(updateOk => initEnabled = Full(enabled))
       configService.set_rudder_workflow_self_validation(selfVal).foreach(updateOk => initSelfVal = Full(selfVal))
       configService.set_rudder_workflow_self_deployment(selfDep).foreach(updateOk => initSelfDep = Full(selfDep))
-        S.notice("updateWorkflow","Change Requests (validation workflow) configuration correctly updated")
-      check()
+      JsRaw("""showNotification('success',"Change Requests (validation workflow) configuration correctly updated")""") & check()
     }
 
     def noModif = (    initEnabled.map(_ == enabled).getOrElse(false)
@@ -284,9 +274,6 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
                   )
 
     def check() = {
-      if(!noModif){
-        S.notice("updateWorkflow","")
-      }
       Run(s"""$$("#workflowSubmit").prop("disabled",${noModif});""")
     }
     def initJs(newStatus :Boolean) = {
@@ -397,8 +384,7 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
 
       // start a promise generation, Since we check if there is change to save, if we got there it mean that we need to redeploy
       startNewPolicyGeneration
-      S.notice("updateCfserverNetwork","Network security options correctly updated")
-      check()
+      JsRaw("""showNotification('success',"Network security options correctly updated")""") & check()
     }
 
     def noModif = (
@@ -407,9 +393,6 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
     )
 
     def check() = {
-      if(!noModif){
-        S.notice("updateCfserverNetwork","")
-      }
       Run(s"""$$("#cfserverNetworkSubmit").prop('disabled', ${noModif});""")
     }
 
@@ -492,7 +475,6 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
       var reportProtocol = initValue
       def check = {
         val noChange = initReportsProtocol == reportProtocol
-        S.notice("updateNetworkProtocol","")
         Run(s"""$$("#networkProtocolSubmit").prop("disabled",${noChange});""")
       }
 
@@ -503,11 +485,9 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
             // Update the initial value of the form
             initReportsProtocol = reportProtocol
             startNewPolicyGeneration
-            S.notice("updateNetworkProtocol","Network protocol options correctly updated")
-            check
+            JsRaw("""showNotification('success',"Network protocol options correctly updated")""") & check
           case eb:EmptyBox =>
-            S.error("updateNetworkProtocol","Error when saving network protocol options")
-            Noop
+            JsRaw("""showNotification('error',"Error when saving network protocol options")""") &Noop
         }
       }
 
@@ -616,14 +596,10 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
 
         // start a promise generation, Since we check if there is change to save, if we got there it mean that we need to redeploy
         startNewPolicyGeneration
-        S.notice("updateCfengineGlobalProps","File retention settings correctly updated")
-        check()
-
+        JsRaw("""showNotification('success',"File retention settings correctly updated")""") & check()
       } catch {
         case ex:NumberFormatException =>
-
-          S.error("updateCfengineGlobalProps", "Invalid value "+ex.getMessage().replaceFirst("F", "f"))
-          Noop
+          JsRaw(s"""showNotification('success',"Invalid value ${ex.getMessage().replaceFirst("F", "f")}")""") & Noop
       }
 
     }
@@ -634,9 +610,6 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
     )
 
     def check() = {
-      if(!noModif){
-        S.notice("updateCfengineGlobalProps","")
-      }
       Run(s"""$$("#cfengineGlobalPropsSubmit").prop("disabled",${noModif});""")
     }
 
@@ -687,11 +660,11 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
 
       // start a promise generation, Since we check if there is change to save, if we got there it mean that we need to redeploy
       startNewPolicyGeneration
-      S.notice("loggingConfiguration", storeAllCentralizedLogsInFile match {
-        case true  => "Logging will be enabled during the next agent run on this server (5 minutes maximum)"
-        case false => "Logging will be disabled during the next agent run on this server (5 minutes maximum)"
+      var message = ( storeAllCentralizedLogsInFile match {
+        case true  => JsRaw("""showNotification('success',"Logging will be enabled during the next agent run on this server (5 minutes maximum)")""")
+        case false => JsRaw("""showNotification('success',"Logging will be disabled during the next agent run on this server (5 minutes maximum)")""")
         })
-      check()
+      message & check()
     }
 
     def noModif = (
@@ -699,9 +672,6 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
     )
 
     def check() = {
-      if(!noModif){
-        S.notice("loggingConfiguration","")
-      }
       Run(s"""$$("#loggingConfigurationSubmit").prop("disabled",${noModif});""")
     }
 
@@ -730,15 +700,15 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
         var sendMetrics = value
         def submit() = {
           val save = configService.set_send_server_metrics(sendMetrics,CurrentUser.getActor,genericReasonMessage)
-
-          S.notice("sendMetricsMsg", save match {
+          var message = ( save match {
             case Full(_)  =>
               // start a promise generation, Since we may have change the mode, if we got there it mean that we need to redeploy
               startNewPolicyGeneration
-              "'send server metrics' property updated"
+              JsRaw("""showNotification('success',"'send server metrics' property updated")""")
             case eb: EmptyBox =>
-              "There was an error when updating the value of the 'send server metrics' property"
+              JsRaw("""showNotification('error',"There was an error when updating the value of the 'send server metrics' property")""")
           } )
+          message
         }
 
         ( "#sendMetricsCheckbox" #> {
@@ -768,18 +738,18 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
         var displayGraphs = value
         def noModif() = displayGraphs == value
         def check() = {
-          S.notice("displayGraphsMsg","")
           Run(s"""$$("#displayGraphsSubmit").prop("disabled",${noModif()});""")
         }
 
         def submit() = {
           val save = configService.set_display_changes_graph(displayGraphs)
-          S.notice("displayGraphsMsg", save match {
+          var message= ( save match {
             case Full(_)  =>
-              "'display change graphs' property updated"
+              JsRaw("""showNotification('success',"'display change graphs' property updated")""") & check()
             case eb: EmptyBox =>
-              "There was an error when updating the value of the 'display change graphs' property"
+              JsRaw("""showNotification('error',"There was an error when updating the value of the 'display change graphs' property")""") & check()
           } )
+          message
         }
 
         ( "#displayGraphsCheckbox" #> {
@@ -815,19 +785,14 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
 
     def submit = {
       configService.set_api_compatibility_mode(apiMode).foreach(updateOk => initApiMode = Full(apiMode))
-
-      S.notice("apiModeMsg", "Api compatibility mode changed")
-      check()
+      JsRaw("showNotification('success','Api compatibility mode changed')") & check()
     }
 
     def noModif = (
-         initApiMode.map(_ == apiMode).getOrElse(false)
+      initApiMode.map(_ == apiMode).getOrElse(false)
     )
 
     def check() = {
-      if(!noModif){
-        S.notice("apiModeMsg","")
-      }
       Run(s"""$$("#apiModeSubmit").prop("disabled",${noModif});""")
     }
 
@@ -860,24 +825,23 @@ class PropertiesManagement extends DispatchSnippet with Loggable {
         var x = initialValue
         def noModif() = x == currentSavedValued
         def check() = {
-          S.notice("directiveScriptEngineMsg","")
           Run(s"""$$("#directiveScriptEngineSubmit").prop("disabled",${noModif()});""")
         }
 
         def submit() = {
           val save = configService.set_rudder_featureSwitch_directiveScriptEngine(x)
-          S.notice("directiveScriptEngineMsg", save match {
+          var message = (save match {
             case Full(_)  =>
               currentSavedValued = x
               // If we disable this feature we want to start policy generation because some data may be invalid
               if (x == Disabled) {
                 startNewPolicyGeneration
               }
-              "'directive script engine' property updated. The feature will be loaded as soon as you go to another page or reload this one."
+              JsRaw("""showNotification('success',"'directive script engine' property updated. The feature will be loaded as soon as you go to another page or reload this one.")""")
             case eb: EmptyBox =>
-              "There was an error when updating the value of the 'directive script engine' property"
+              JsRaw("""showNotification('error',"There was an error when updating the value of the 'directive script engine' property")""")
           } )
-          check()
+          message & check()
         }
 
         ( "#directiveScriptEngineCheckbox" #> {

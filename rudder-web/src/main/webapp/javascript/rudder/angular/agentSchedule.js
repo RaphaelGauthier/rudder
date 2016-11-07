@@ -145,6 +145,7 @@ cfagentScheduleModule.controller("cfagentScheduleController", function($scope) {
     if (updateAgentRun !== undefined) {
       updateAgentRun($scope.agentRun.interval)
     }
+    showNotification('success','Your changes have been saved');
     $scope.savedValue = angular.copy($scope.agentRun);
   }
 

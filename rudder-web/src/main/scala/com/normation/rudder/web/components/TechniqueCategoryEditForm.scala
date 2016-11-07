@@ -135,7 +135,7 @@ class TechniqueCategoryEditForm(
         JsRaw("$('#removeCategoryActionDialog').bsModal('hide');") &
         onSuccessCallback() & //Replace(htmlId_activeTechniquesTree, userLibrary) &
         SetHtml(htmlId_form, <span class="greenscala">Category successfully deleted</span>) &
-        successPopup
+        successNotification
 
       case e:EmptyBox =>
         logger.error("Error when deleting user lib category with ID %s".format(currentCategory.id), e)
@@ -238,7 +238,7 @@ class TechniqueCategoryEditForm(
              SetHtml(htmlId_categoryDetailsForm, categoryDetailsForm ) &
              onFailureCallback()
            } else {
-             successPopup &
+             successNotification &
              SetHtml(htmlId_categoryDetailsForm, categoryDetailsForm) &
              onSuccessCallback() //Replace(htmlId_activeTechniquesTree, <lift:configuration.TechniqueLibraryManagement.userLibrary />) & buildUserLibraryJsTree
            }
@@ -276,8 +276,8 @@ class TechniqueCategoryEditForm(
 
 
 
-  ///////////// success pop-up ///////////////
-    private[this] def successPopup : JsCmd = {
-    JsRaw(""" callPopupWithTimeout(200, "successConfirmationDialog")""")
-  }
+  ///////////// success notification ///////////////
+    private[this] def successNotification : JsCmd = {
+      JsRaw("""showNotification('success','Your changes have been saved')""")
+    }
 }

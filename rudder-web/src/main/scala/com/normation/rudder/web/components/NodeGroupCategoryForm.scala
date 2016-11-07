@@ -217,7 +217,7 @@ class NodeGroupCategoryForm(
         JsRaw("""$('#removeActionDialog').bsModal('hide');""") &
         SetHtml(htmlIdCategory, NodeSeq.Empty) &
         onSuccessCallback(nodeGroupCategory.id.value) &
-        successPopup
+        successNotification
       case e:EmptyBox =>
         val m = (e ?~! "Error when trying to delete the category").messageChain
         formTracker.addFormError(error(m))
@@ -310,7 +310,7 @@ class NodeGroupCategoryForm(
       ) match {
         case Full(x) =>
           _nodeGroupCategory = x
-          onSuccess & onSuccessCallback(nodeGroupCategory.id.value) & successPopup
+          onSuccess & onSuccessCallback(nodeGroupCategory.id.value) & successNotification
         case Empty =>
           logger.error("An error occurred while saving the GroupCategory")
            formTracker.addFormError(error("An error occurred while saving the GroupCategory"))
@@ -341,9 +341,9 @@ class NodeGroupCategoryForm(
     }
   }
 
-  ///////////// success pop-up ///////////////
-    private[this] def successPopup : JsCmd = {
-    JsRaw("""callPopupWithTimeout(200, "successConfirmationDialog");""")
-  }
+  ///////////// success notification ///////////////
+    private[this] def successNotification : JsCmd = {
+      JsRaw("""showNotification('success','Your changes have been saved')""")
+    }
 
 }

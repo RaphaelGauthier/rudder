@@ -736,12 +736,6 @@ class TechniqueLibraryManagement extends DispatchSnippet with Loggable {
     }
   }
 
-  ///////////// success pop-up ///////////////
-    private[this] def successPopup : JsCmd = {
-    JsRaw(""" callPopupWithTimeout(200, "successConfirmationDialog")
-    """)
-  }
-
   private[this] def showCreateActiveTechniqueCategoryPopup() : JsCmd = {
     setCreationPopup
 
@@ -767,15 +761,16 @@ class TechniqueLibraryManagement extends DispatchSnippet with Loggable {
 
       def initJs = SetHtml("techniqueLibraryUpdateInterval" , <span>{updateTecLibInterval}</span>)
       def process = {
-        updatePTLibService.update(ModificationId(uuidGen.newUuid), CurrentUser.getActor, Some("Technique library reloaded by user")) match {
+
+        val message = updatePTLibService.update(ModificationId(uuidGen.newUuid), CurrentUser.getActor, Some("Technique library reloaded by user")) match {
           case Full(x) =>
-            S.notice("updateLib", "The Technique library was successfully reloaded")
+            JsRaw("showNotification('success','The Technique library was successfully reloaded')")
           case e:EmptyBox =>
             val error = e ?~! "An error occured when updating the Technique library from file system"
             logger.debug(error.messageChain, e)
-            S.error("updateLib", error.msg)
+            JsRaw(s"""showNotification('error',"${error.msg}")""")
         }
-
+        message &
         (if (isTechniqueLibraryPage) {
           refreshTree
         } else {

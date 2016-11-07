@@ -130,8 +130,10 @@ app.controller('auditmodeCtrl', function ($scope, $http, $location, $timeout, co
           $scope.nochange = true;
           $scope.currentConf.policyMode = $scope.conf.policyMode;
           $scope.currentConf.overrideMode = $scope.conf.overrideMode;
+          showNotification('success','Your changes have been saved')
         }else{
           $scope.errorFeedback = true;
+          showNotification('error','Error during saving changes')
         }
         $scope.saving = 2;
       });

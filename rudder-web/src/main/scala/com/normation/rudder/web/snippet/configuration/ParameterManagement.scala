@@ -253,7 +253,7 @@ class ParameterManagement extends DispatchSnippet with Loggable {
     } else {
       returns match {
         case Left(param) => // ok, we've received a parameter, do as before
-          closePopup() &  updateGrid(workflowEnabled) & successPopup
+          closePopup() &  updateGrid(workflowEnabled) & successNotification
         case Right(changeRequestId) => // oh, we have a change request, go to it
           JsInitContextLinkUtil.redirectToChangeRequestLink(changeRequestId)
       }
@@ -277,20 +277,17 @@ class ParameterManagement extends DispatchSnippet with Loggable {
     Replace(gridContainer, display())
   }
 
-  ///////////// success pop-up ///////////////
-  private[this] def successPopup : JsCmd = {
-    JsRaw(""" callPopupWithTimeout(200, "successConfirmationDialog", 100, 350)
-    """)
+  ///////////// success notification ///////////////
+  private[this] def successNotification : JsCmd = {
+    JsRaw("""showNotification('success','Your changes have been saved')""")
   }
 
   private[this] def onSuccessDeleteCallback(workflowEnabled: Boolean) : JsCmd = {
-    updateGrid(workflowEnabled) & successPopup
+    updateGrid(workflowEnabled) & successNotification
   }
 
-
-
   private[this] def closePopup() : JsCmd = {
-    JsRaw(""" $('.modal').bsModal('hide');""")
+    JsRaw("""$('.modal').bsModal('hide');""")
   }
 
 

@@ -69,13 +69,9 @@ class DyngroupReloading extends DispatchSnippet with Loggable {
     // JsCmd which will be sent back to the browser
     // as part of the response
     def process(): JsCmd = {
-      //clear errors
-      S.clearCurrentNotices
-
       updateDynamicGroups.startManualUpdate
 
-      S.notice("dyngroupReloadingNotice", "Dynamic group reloading started")
-
+      JsRaw("showNotification('success','Dynamic group reloading started')") &
       Replace("dyngroupReloadingForm", outerXml.applyAgain)
     }
 

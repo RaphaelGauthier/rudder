@@ -227,7 +227,7 @@ class Archives extends DispatchSnippet with Loggable {
           }
 
           Replace(formName, outerXml.applyAgain) &
-          successPopup
+          successNotification
     }
 
     // our process method returns a
@@ -316,8 +316,8 @@ class Archives extends DispatchSnippet with Loggable {
     }
   }
 
-  ///////////// success pop-up ///////////////
-  private[this] def successPopup : JsCmd = {
-    JsRaw("""callPopupWithTimeout(200, "successConfirmationDialog")""")
+  ///////////// success notification ///////////////
+  private[this] def successNotification : JsCmd = {
+    JsRaw("""showNotification('success','Your changes have been saved')""")
   }
 }

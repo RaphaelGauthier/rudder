@@ -403,7 +403,7 @@ class RuleEditForm(
     //and so, our AJAX could be broken
     onSuccessCallback(rule) & updateFormClientSide() &
     //show success popup
-    successPopup
+    successNotification
   }
 
   private[this] def onFailure() : JsCmd = {
@@ -606,14 +606,10 @@ class RuleEditForm(
     }
   }
 
-  ///////////// success pop-up ///////////////
-  private[this] def successPopup : JsCmd = {
-    def warning(warn : String) : NodeSeq = {
-        <div class="alert alert-warning col-lg-12 col-sm-12 col-xs-12 text-center" role="alert">
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span class="sr-only">Warning:</span>
-            {warn} No configuration policy will be deployed.
-        </div>
+  ///////////// success notification ///////////////
+  private[this] def successNotification : JsCmd = {
+    def warning(warn : String) : String = {
+      s"""${warn} No configuration policy will be deployed."""
     }
 
     val content =
@@ -629,9 +625,12 @@ class RuleEditForm(
         } else {
           NodeSeq.Empty
       } }
-
-    SetHtml("successDialogContent",content) &
-    JsRaw(""" callPopupWithTimeout(200, "successConfirmationDialog")""")
+    JsRaw(s"""
+      showNotification('success', 'Your changes have been saved');
+      if('${content}'){
+        showNotification('warning', '${content}');
+      }
+    """)
   }
 
 }

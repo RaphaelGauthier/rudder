@@ -334,7 +334,7 @@ class TechniqueEditForm(
     cleanTrackers
     onSuccessCallback() & updateFormClientSide() &
     //show success popup
-    successPopup
+    successNotification
   }
 
   private[this] def cleanTrackers() {
@@ -395,7 +395,7 @@ class TechniqueEditForm(
               onSuccessCallback() &
               SetHtml(htmlId_technique, <div id={htmlId_technique}>Technique successfully deleted</div> ) &
               //show success popup
-              successPopup
+              successNotification
             case Empty => //arg.
               formTrackerRemovePopup.addFormError(error("An error occurred while deleting the Technique."))
               onFailure
@@ -611,10 +611,8 @@ class TechniqueEditForm(
     }
   }
 
-  ///////////// success pop-up ///////////////
-    private[this] def successPopup : JsCmd = {
-    JsRaw(""" callPopupWithTimeout(200, "successConfirmationDialog")
-    """)
-  }
-
+  ///////////// success notification ///////////////
+    private[this] def successNotification : JsCmd = {
+      JsRaw("""showNotification('success' , 'Your changes have been saved')""")
+    }
 }

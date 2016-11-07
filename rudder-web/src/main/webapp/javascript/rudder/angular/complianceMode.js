@@ -99,6 +99,7 @@ complianceModeModule.controller("complianceModeController", function($scope) {
     var run = JSON.stringify($scope.complianceMode);
     $scope.callback(run);
     $scope.savedValue = angular.copy($scope.complianceMode);
+    showNotification('success','Your changes have been saved');
   }
 
   $scope.isUnchanged = function(agentRun) {

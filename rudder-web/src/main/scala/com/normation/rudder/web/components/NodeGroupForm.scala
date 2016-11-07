@@ -326,7 +326,7 @@ class NodeGroupForm(
         onSuccessCallback(Right(crId))
       } else {
         val updateCategory = newCategory.getOrElse(parentCategoryId)
-        successPopup & onSuccessCallback(Left((newGroup,updateCategory))) &
+        successNotification & onSuccessCallback(Left((newGroup,updateCategory))) &
         (if (action==ModificationValidationPopup.Delete)
            SetHtml(htmlId_item,NodeSeq.Empty)
         else
@@ -420,9 +420,8 @@ class NodeGroupForm(
     }
   }
 
-  private[this] def successPopup : JsCmd = {
-    JsRaw(""" callPopupWithTimeout(200, "successConfirmationDialog")
-    """)
+  private[this] def successNotification : JsCmd = {
+    JsRaw("""showNotification('success','Your changes have been saved')""")
   }
 
 }

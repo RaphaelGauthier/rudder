@@ -73,7 +73,7 @@ class ClearCache extends DispatchSnippet with Loggable {
   }
 
 
-  def action =  {     S.clearCurrentNotices
+  def action =  {
 
       val modId = ModificationId(uuidGen.newUuid)
 
@@ -110,16 +110,14 @@ class ClearCache extends DispatchSnippet with Loggable {
     // JsCmd which will be sent back to the browser
     // as part of the response
     def process(): JsCmd = {
-      //clear errors
-      S.clearCurrentNotices
-      action match {
+      val message = action match {
         case empty:EmptyBox =>
           val e = empty ?~! "Error while clearing caches"
-          S.error(e.messageChain)
+          JsRaw(s"""showNotification('error','${e.messageChain}')""")
         case Full(result) =>
-          S.notice("clearCacheNotice","Caches were successfully cleared")
+          JsRaw("showNotification('success','Caches were successfully cleared')")
       }
-      Replace("clearCacheForm", outerXml.applyAgain)
+      message & Replace("clearCacheForm", outerXml.applyAgain)
     }
 
     //process the list of networks
