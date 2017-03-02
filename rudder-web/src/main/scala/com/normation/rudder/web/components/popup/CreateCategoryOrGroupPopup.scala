@@ -110,7 +110,7 @@ class CreateCategoryOrGroupPopup(
    */
  private[this] def initJs : JsCmd = {
     JsRaw("""
-        if($('input[value="Group"]').get(':checked')){
+        if($('input[value="Group"]').is(':checked')){
           $('#createGroupHiddable').removeClass('nodisplay');
           $('#itemTitle').text('Group');
         }else{
@@ -129,7 +129,6 @@ class CreateCategoryOrGroupPopup(
             $('#itemTitle').text('Category');
           }
         );
-        $('input[value="Group"]').click();
      """)
   }
 
