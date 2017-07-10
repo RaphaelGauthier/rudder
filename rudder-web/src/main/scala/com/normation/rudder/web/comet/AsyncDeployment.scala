@@ -71,7 +71,8 @@ class AsyncDeployment extends CometActor with CometListener with Loggable {
   private[this] val eventList                 = RudderConfig.eventListDisplayer
   private[this] val uuidGen                   = RudderConfig.stringUuidGenerator
   private[this] val clearCache                = new ClearCache()
-
+  private[this] val updatePTLibService        = RudderConfig.updateTechniqueLibrary
+  private[this] val updateDynamicGroups       = RudderConfig.updateDynamicGroups
   //current states of the deployment
   private[this] var deploymentStatus = DeploymentStatus(NoStatus, IdleDeployer)
 
@@ -218,9 +219,46 @@ class AsyncDeployment extends CometActor with CometListener with Loggable {
     val callback = JsRaw("$('#generatePoliciesDialog').bsModal('show');")
     <lift:authz role="deployment_write"> {
       SHtml.a(
-          Text("Regenerate all policies")
+          <span>Regenerate all policies</span><i class="icon-popover fa fa-info-circle" data-original-title="Regenerate all policies" data-content="This technique is using at least one deprecated generic method." rel="popover" data-placement="bottom" data-html="true" data-trigger="hover" data-container="body"></i>
           , callback
           , ("class","regeneratePolicies")
+      )
+    }
+    </lift:authz>
+  }
+  private[this] def reloadTechniques : NodeSeq = {
+    def process = {
+      updatePTLibService.update(ModificationId(uuidGen.newUuid), CurrentUser.getActor, Some("Technique library reloaded by user")) match {
+        case Full(x) =>
+          //S.notice("updateLib", "The Technique library was successfully reloaded")
+        case e:EmptyBox =>
+          val error = e ?~! "An error occured when updating the Technique library from file system"
+          logger.debug(error.messageChain, e)
+          //S.error("updateLib", error.msg)
+      }
+    }
+    <lift:authz role="deployment_write"> {
+      SHtml.a( {
+        () =>
+          process _
+          Noop
+      }
+      , <span>Reload Techniques</span><i class="fa fa-info-circle"></i>
+      )
+    }
+    </lift:authz>
+  }
+  private[this] def reloadDynamicGroups : NodeSeq = {
+    def process = {
+      updateDynamicGroups.startManualUpdate
+    }
+    <lift:authz role="deployment_write"> {
+      SHtml.a( {
+        () =>
+          process _
+          Noop
+      }
+      , <span>Reload dynamic groups</span><i class="fa fa-info-circle"></i>
       )
     }
     </lift:authz>
@@ -241,6 +279,13 @@ class AsyncDeployment extends CometActor with CometListener with Loggable {
           </li>
           <li class="footer">
             {showGeneratePoliciesPopup}
+          </li>
+          <li class="separator"></li>
+          <li class="footer">
+            {reloadTechniques}
+          </li>
+          <li class="footer">
+            {reloadDynamicGroups}
           </li>
         </ul>
       </li>

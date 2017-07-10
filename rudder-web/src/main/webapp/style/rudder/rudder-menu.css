@@ -671,6 +671,18 @@ a.sidebar-toggle{
   color:#fff;
   height: 100%;
 }
+ul.dropdown-menu li.footer > a > i.fa{
+  position: relative;
+  top: 1px;
+  left: 8px;
+  color:#999;
+  font-size: 16px;
+  margin: 0;
+  transition-duration:.2s;
+}
+ul.dropdown-menu li.footer > a > i.fa:hover{
+  color:#777;
+}
 .tw-bs .navbar-nav li.dropdown {
   height: 50px;
 }
@@ -1467,9 +1479,7 @@ form .tooltip-content p {
   transform:rotate(-45deg);
   transition-duration:.2s;
 }
-.callout-fade:hover div.marker span.glyphicon,.callout-fade:hover div.marker span.fa{
-  transform:rotate(-65deg);
-}
+
 /* --- SUCCESS --- */
 .callout-fade.callout-success{
   border-left-color: #9bc832;
