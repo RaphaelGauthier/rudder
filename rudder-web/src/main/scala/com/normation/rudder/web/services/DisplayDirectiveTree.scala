@@ -162,6 +162,12 @@ object DisplayDirectiveTree extends Loggable {
 
       private[this] val localOnClickDirective = onClickDirective.map( f => f(activeTechnique) )
 
+      val dscSupportTechnique = activeTechnique.techniques.values.flatMap { t => t.agentConfigs.map{ _.agentType match {
+        case AgentType.Dsc => t.id.version.toString
+        case _ => None
+      }}}
+      logger.info(dscSupportTechnique)
+
       def isDeprecated   = {
         activeTechnique.techniques.values.forall { t => t.deprecrationInfo.isDefined }
       }
@@ -267,7 +273,6 @@ object DisplayDirectiveTree extends Loggable {
             NodeSeq.Empty
           }
         }
-
         val (isDeprecated,deprecationInfo,deprecatedIcon) =
 
         if (activeTechnique.techniques.values.forall { t => t.deprecrationInfo.isDefined }) {
