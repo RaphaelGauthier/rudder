@@ -260,7 +260,12 @@ class Boot extends Loggable {
             "secure" / "nodeManager" / "groups"
             >> LocGroup("groupGroup")
             >> TestAccess( () => userIsAllowed("/secure/index",Read("group") ) )
-
+            /* --- DEBUG --- */
+        , Menu("NewGroups", <span>New Groups</span>) /
+            "secure" / "nodeManager" / "newgroups"
+            >> LocGroup("groupGroup")
+            >> TestAccess( () => userIsAllowed("/secure/index",Read("group") ) )
+            /* --- ----- --- */
       )
 
     def buildManagerMenu(name:String) =
@@ -361,6 +366,12 @@ class Boot extends Loggable {
             "secure" / "utilities" / "techniqueEditor"
             >> LocGroup("utilitiesGroup")
             >> TestAccess ( () => userIsAllowed("/secure/index",Read("technique")) )
+            /* --- DEBUG --- */
+        , Menu("advancedReporting", <span>Advanced Reporting</span>) /
+            "secure" / "utilities" / "advancedReporting"
+            >> LocGroup("utilitiesGroup")
+            >> TestAccess( () => userIsAllowed("/secure/index",Read("administration") ) )
+            /* --- ----- --- */
       )
     }
 
