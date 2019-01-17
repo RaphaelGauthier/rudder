@@ -736,3 +736,11 @@ function graphTooltip (tooltip, displayColor) {
   tooltipEl.style.fontWeight = tooltip._bodyFontStyle;
   tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
 };
+
+function goToPolicyServer(e){
+  e.preventDefault();
+  e.stopPropagation();
+  var el = e.target;
+  var href = $(el).attr('href');
+  window.location.href = href;
+}
