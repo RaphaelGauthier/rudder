@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift="http://liftweb.net/">
+  <head>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+    <script data-lift="baseUrl.display" ></script>
+
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/timepicker/jquery-ui-timepicker-addon.min.css" media="screen" />
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/angular/angular-filemanager.min.css" media="screen" />
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/jstree/style.css" media="screen" />
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/fontawesome-5-15-1/css/all.min.css"/>
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/fontawesome-5-15-1/css/v4-shims.min.css"/>
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/ionicons-2.0.1/css/ionicons.min.css">
+
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/graph/Chart-2.9.4.min.css" media="scren" />
+
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder.css" media="screen" />
+
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/bootstrap/tw-bs-bootstrap-3.3.7.css" media="screen" />
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/bootstrap/bootstrap-toggle-2.2.2.min.css" media="screen" />
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder-progress-bar.css" media="screen" />
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder-bootstrap.css" media="screen" />
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder-quicksearch.css" media="screen" />
+
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/datatables/rowGroup-bootstrap-1.1.0.min.css" media="screen" />
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/datatables/fixedHeader-bootstrap-3.1.7.min.css" media="screen" />
+
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/AdminLTE/AdminLTE.min.css"/>
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder-menu.css"/>
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder-template.css"/>
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder-datatable.css" media="screen" />
+
+
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/utils/WeakMap.js"></script>
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/utils/MutationObserver.js"></script>
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/jquery/jquery-3.5.1.min.js"></script>
+
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/AdminLTE/AdminLTE.min.js"></script>
+
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/bootstrap/bootstrap-3.3.7.min.js"></script>
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/utils/showdown-1.9.1.min.js"></script>
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/utils/xss.min.js"></script>
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/utils/showdown-xss-filter.js"></script>
+
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/rudder/rudder.js"></script>
+
+    <!-- ELM -->
+    <link type="text/css" rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder-notifications.css" />
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/rudder/elm/rudder-notifications.js"></script>
+    <script type="text/javascript" data-lift="with-cached-resource" src="/javascript/rudder/rudder-elm.js"></script>
+    <script>
+      ($(function(){
+        if(localStorage.getItem('sidebar-collapse') == 'true'){
+          $('body').addClass("sidebar-collapse");
+        }else{
+          if(window.innerWidth<1375){$('body').addClass('sidebar-collapse');}else{$('body').removeClass('sidebar-collapse');}
+        }
+        $('.sidebar-toggle').on('click',function(){
+          var isCollapsed = $('body').hasClass("sidebar-collapse");
+          localStorage.setItem('sidebar-collapse', isCollapsed);
+        });
+      }));
+      $(window).resize(function(){
+          if(window.innerWidth<1375){$('body').addClass('sidebar-collapse');}else if(localStorage.getItem('sidebar-collapse') != 'true'){$('body').removeClass('sidebar-collapse');}
+      });
+    </script>
+  </head>
+  <body data-lift="OnboardingLayout.display" class="skin-yellow sidebar-mini">
+    <div class="wrapper">
+      <header class="main-header">
+        <a class="logo fixed">
+          <span class="logo-mini"><img alt="Rudder" data-lift="with-cached-resource" src="/images/logo-rudder-sm.svg"></span>
+          <span class="logo-lg"><img alt="Rudder" data-lift="with-cached-resource" src="/images/logo-rudder-nologo.svg"></span>
+        </a>
+        <nav class="navbar navbar-static-top" role="navigation">
+          <a class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+          </a>
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav" id="rudder-navbar">
+              <!-- User -->
+              <li id="user-menu" class="user user-menu" data-lift="UserInformation.userCredentials">
+                <a href="#" id="user-menu-action">
+                  <span class="hidden-xs glyphicon glyphicon-user"></span>
+                  <span id="openerAccount">[User name]</span>
+                </a>
+              </li>
+              <!-- Log out -->
+              <li>
+                <a id="logout" href="#" data-toggle="control-sidebar"><i class="fa fa-sign-out"></i></a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <aside class="main-sidebar fixed">
+        <section class="sidebar">
+          <!-- Navigation Menu -->
+          <ul class="sidebar-menu fake-menu">
+            <li class="treeview">
+              <a><i></i><span class="s1"></span></a>
+            </li>
+            <li class=" treeview">
+              <a><i></i><span class="s2"></span></a>
+              <ul class="treeview-menu">
+                <li><a><span class="s3"></span></a></li>
+                <li><a><span class="s2"></span></a></li>
+                <li><a><span class="s1"></span></a></li>
+                <li><a><span class="s4"></span></a></li>
+              </ul>
+            </li>
+            <li class=" treeview">
+              <a><i></i><span class="s3"></span></a>
+              <ul class="treeview-menu">
+                <li><a><span class="s4"></span></a></li>
+                <li><a><span class="s1"></span></a></li>
+                <li><a><span class="s4"></span></a></li>
+                <li><a><span class="s2"></span></a></li>
+              </ul>
+            </li>
+            <li class="treeview">
+              <a><i></i><span class="s2"></span></a>
+            </li>
+            <li class="treeview">
+              <a><i></i><span class="s1"></span></a>
+            </li>
+            <li class="treeview">
+              <a><i></i><span class="s3"></span></a>
+            </li>
+            <li class="treeview footer">
+            <span>Rudder ${version}</span>
+            <a href="https://www.rudder.io/" target="_blank">© Normation ${current-year}</a>
+            </li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+    <div class="modal fade" id="ModalLogOut" tabindex="-1" role="dialog">
+      <div class="modal-backdrop fade in" style="height: 100%;"></div>
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+            </div>
+            <h4 class="modal-title" id="myModalLabel">Log out</h4>
+          </div>
+          <div class="modal-body">
+            <h4 class="row text-center">
+               You are about to log out
+            </h4>
+            <h5 class="row text-center">
+               Do you want to proceed?
+            </h5>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <span data-lift="UserInformation.logout">
+              <a href="/logout" class="btn btn-danger">Log out</a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <img alt="" id="ajax-loader" class="ajaxloader svg-loader" data-lift="with-cached-resource" src="/images/ajax-loader.svg"/>
+
+    <div class="content-wrapper">
+      <div class="rudder_col">
+        <lift:Authz.whenhasrights>
+          <rudder-notifications></rudder-notifications>
+          <div id="content">
+          <!-- Here come the content bound by <lift:surround at="content"> -->
+          </div>
+        </lift:Authz.whenhasrights>
+
+        <lift:Authz.whennorights>
+          <div class="portlet"><div class="portlet-content"><div class="callout-fade callout-error" style="padding: 30px; text-align:center">
+            <div class="marker">
+              <span class="glyphicon glyphicon-info-sign"></span>
+            </div>
+            You don't have sufficient authorization rights to access this content. Please contact your administrator to have more information.
+          </div></div></div>
+        </lift:Authz.whennorights>
+      </div>
+    </div>
+  </body>
+</html>

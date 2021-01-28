@@ -1,0 +1,28 @@
+<lift:surround with="onboarding-layout" at="content">
+    <div id="onboarding-main">
+        <head_merge>
+            <title>Onboarding</title>
+            <script data-lift="with-cached-resource" src="/javascript/rudder/elm/rudder-onboarding.js"></script>
+            <link rel="stylesheet" data-lift="with-cached-resource" href="/style/rudder/rudder-wizard.css" />
+            <style>
+                .rudder-template > .one-col{
+                  flex: 1;
+                }
+                .template-main{
+                  flex-basis : initial !important;
+                  flex: auto !important;
+                }
+            </style>
+        </head_merge>
+
+        <div id="onboarding-content"></div>
+    </div>
+
+    <script>
+      var main = document.getElementById("onboarding-content")
+      var initValues = {
+        contextPath : contextPath
+      };
+      var app  = Elm.Onboarding.init({node: main, flags: initValues});
+    </script>
+</lift:surround>
