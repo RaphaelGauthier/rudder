@@ -7,6 +7,7 @@ import Init exposing (init, subscriptions)
 import View exposing (view)
 import Result
 import ApiCalls exposing (getRuleDetails)
+import Debug
 
 main =
   Browser.element
@@ -97,6 +98,13 @@ update msg model =
 
     CloseRuleDetails ->
         ( { model | selectedRule  = Nothing } , Cmd.none )
+
+    GetRulesComplianceResult res ->
+      case res of
+        Ok r ->
+          ( { model | rulesCompliance  = r } , Cmd.none )
+        Err err ->
+          (model, Cmd.none)
 
 processApiError : Error -> Model -> ( Model, Cmd Msg )
 processApiError err model =

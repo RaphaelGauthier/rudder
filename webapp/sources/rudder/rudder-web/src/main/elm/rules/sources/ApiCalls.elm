@@ -103,3 +103,19 @@ getRuleDetails model ruleId =
         }
   in
     send GetRuleDetailsResult req
+
+getRulesCompliance : Model -> Cmd Msg
+getRulesCompliance model =
+  let
+    req =
+      request
+        { method          = "GET"
+        , headers         = []
+        , url             = getUrl model "/compliance/rules?level=6"
+        , body            = emptyBody
+        , expect          = expectJson decodeGetRulesCompliance
+        , timeout         = Nothing
+        , withCredentials = False
+        }
+  in
+    send GetRulesComplianceResult req

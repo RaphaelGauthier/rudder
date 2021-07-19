@@ -2,11 +2,11 @@ module View exposing (..)
 
 import DataTypes exposing (..)
 import Html exposing (Html, button, div, i, span, text, h1, h4, ul, li, input, a, p, form, label, textarea, select, option, table, thead, tbody, tr, th, td, small)
-import Html.Attributes exposing (id, class, type_, placeholder, value, for, href, colspan, rowspan)
+import Html.Attributes exposing (id, class, type_, placeholder, value, for, href, colspan, rowspan, style)
 import Html.Events exposing (onClick)
 import List exposing (any, intersperse, map, sortWith)
 import List.Extra exposing (minimumWith, find)
-import String exposing (lines)
+import String exposing (lines, fromFloat)
 import ApiCalls exposing (getRuleDetails)
 
 view : Model -> Html Msg
@@ -56,17 +56,89 @@ view model =
               Nothing -> id
 
         rowTable : RulesTreeItem -> Html Msg
-        rowTable r = 
-          case r of
-            Rule id name parent enabled->
-              tr[]
-              [ td[][ text name   ]
-              , td[][ text (getCategoryName parent) ]
-              , td[][ text (if enabled == True then "Enabled" else "Disabled") ]
-              , td[][ text ""   ]
-              , td[][ text ""   ]
-              ]
-            Category _ _ _ _ -> text ""
+        rowTable r =
+          let
+            compliance = case r of
+              Rule id _ _ _ ->
+                case find (\c -> c.ruleId == id) model.rulesCompliance of
+                  Just co ->
+                    let
+                      complianceDetails = co.complianceDetails
+
+                      buildComplianceBar : Float -> String -> Html msg
+                      buildComplianceBar val t =
+                        div[class ("progress-bar progress-bar-" ++ t), style "flex" (fromFloat val)][text ((fromFloat val) ++ "%")]
+
+                      getValueCompliance : Maybe Float -> Float
+                      getValueCompliance f =
+                        case f of
+                          Just v  -> v
+                          Nothing -> 0
+
+                      valSuccessNotApplicable       = getValueCompliance complianceDetails.successNotApplicable       -- 0
+                      valSuccessAlreadyOK           = getValueCompliance complianceDetails.successAlreadyOK           -- 0
+                      valSuccessRepaired            = getValueCompliance complianceDetails.successRepaired            -- 0
+                      valAuditCompliant             = getValueCompliance complianceDetails.auditCompliant             -- 0
+                      valAuditNotApplicable         = getValueCompliance complianceDetails.auditNotApplicable         -- 0
+
+                      valAuditNonCompliant          = getValueCompliance complianceDetails.auditNonCompliant          -- 1
+
+                      valError                      = getValueCompliance complianceDetails.error                      -- 2
+                      valAuditError                 = getValueCompliance complianceDetails.auditError                 -- 2
+
+                      valUnexpectedUnknownComponent = getValueCompliance complianceDetails.unexpectedUnknownComponent -- 3
+                      valUnexpectedMissingComponent = getValueCompliance complianceDetails.unexpectedMissingComponent -- 3
+                      valBadPolicyMode              = getValueCompliance complianceDetails.badPolicyMode              -- 3
+
+                      valApplying                   = getValueCompliance complianceDetails.applying                   -- 4
+
+                      valReportsDisabled            = getValueCompliance complianceDetails.reportsDisabled            -- 5
+
+                      valNoReport                   = getValueCompliance complianceDetails.noReport                   -- 6
+
+                      okStatus        = valSuccessNotApplicable + valSuccessAlreadyOK + valSuccessRepaired + valAuditCompliant + valAuditNotApplicable
+                      nonCompliant    = valAuditNonCompliant
+                      error           = valError + valAuditError
+                      unexpected      = valUnexpectedUnknownComponent + valUnexpectedMissingComponent + valBadPolicyMode
+                      pending         = valApplying
+                      reportsDisabled = valReportsDisabled
+                      noreport        = valNoReport
+
+                      okStatusBar        = buildComplianceBar okStatus        "success"
+                      nonCompliantBar    = buildComplianceBar nonCompliant    "audit-noncompliant"
+                      errorBar           = buildComplianceBar error           "error"
+                      unexpectedBar      = buildComplianceBar unexpected      "unknown"
+                      pendingBar         = buildComplianceBar pending         "pending"
+                      reportsDisabledBar = buildComplianceBar reportsDisabled "reportsdisabled"
+                      noreportBar        = buildComplianceBar noreport        "no-report"
+
+                    in
+                      if ( okStatus + nonCompliant + error + unexpected + pending + reportsDisabled + noreport == 0 ) then
+                        div[ class "text-muted"][text "No data available"]
+                      else
+                        div[ class "progress progress-flex"]
+                        [ buildComplianceBar okStatus        "success"
+                        , buildComplianceBar nonCompliant    "audit-noncompliant"
+                        , buildComplianceBar error           "error"
+                        , buildComplianceBar unexpected      "unknown"
+                        , buildComplianceBar pending         "pending"
+                        , buildComplianceBar reportsDisabled "reportsdisabled"
+                        , buildComplianceBar noreport        "no-report"
+                        ]
+
+                  Nothing -> text "No report"
+              _ -> text "No report"
+          in
+            case r of
+              Rule id name parent enabled->
+                tr[onClick (OpenRuleDetails id)]
+                [ td[][ text name ]
+                , td[][ text (getCategoryName parent) ]
+                , td[][ text (if enabled == True then "Enabled" else "Disabled") ]
+                , td[][ compliance ]
+                , td[][ text ""   ]
+                ]
+              Category _ _ _ _ -> text ""
       in
         List.map rowTable rulesList
 
@@ -127,7 +199,7 @@ view model =
       Nothing   -> 
         div [class "main-details"]
         [ div [class "main-table"]
-          [ table [ id"groupNodesTable", class "no-footer dataTable"]
+          [ table [ class "no-footer dataTable"]
             [ thead []
               [ tr [class "head"]
                 [ th [class "sorting_asc", rowspan 1, colspan 1][text "Name"          ]

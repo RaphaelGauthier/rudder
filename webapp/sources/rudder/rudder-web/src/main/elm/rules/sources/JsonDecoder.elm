@@ -1,8 +1,8 @@
 module JsonDecoder exposing (..)
 
 import DataTypes exposing (..)
-import Json.Decode as D exposing (Decoder, andThen, fail, string, succeed, index, bool, oneOf, map2, float)
-import Json.Decode.Pipeline exposing (required, hardcoded)
+import Json.Decode as D exposing (Decoder, andThen, fail, string, succeed, index, bool, oneOf, map, map2, float)
+import Json.Decode.Pipeline exposing (required, optional)
 import String exposing (toLower)
 
 
@@ -47,6 +47,36 @@ decodeRuleDetails =
     |> required "system"           D.bool
     |> required "directives"      (D.list D.string)
     |> required "targets"         (index 0 decodeTargets)
+
+decodeGetRulesCompliance : Decoder (List RuleCompliance)
+decodeGetRulesCompliance =
+  D.at [ "data" , "rules" ] (D.list decodeRuleCompliance)
+
+decodeRuleCompliance : Decoder RuleCompliance
+decodeRuleCompliance =
+  succeed RuleCompliance
+    |> required "id"         D.string
+    |> required "mode"       D.string
+    |> required "compliance" D.float
+    |> required "complianceDetails" decodeComplianceDetails
+
+decodeComplianceDetails : Decoder ComplianceDetails
+decodeComplianceDetails =
+  succeed ComplianceDetails
+    |> optional "successNotApplicable"       (map Just D.float) Nothing
+    |> optional "successAlreadyOK"           (map Just D.float) Nothing
+    |> optional "successRepaired"            (map Just D.float) Nothing
+    |> optional "error"                      (map Just D.float) Nothing
+    |> optional "auditCompliant"             (map Just D.float) Nothing
+    |> optional "auditNonCompliant"          (map Just D.float) Nothing
+    |> optional "auditError"                 (map Just D.float) Nothing
+    |> optional "auditNotApplicable"         (map Just D.float) Nothing
+    |> optional "unexpectedUnknownComponent" (map Just D.float) Nothing
+    |> optional "unexpectedMissingComponent" (map Just D.float) Nothing
+    |> optional "noReport"                   (map Just D.float) Nothing
+    |> optional "reportsDisabled"            (map Just D.float) Nothing
+    |> optional "applying"                   (map Just D.float) Nothing
+    |> optional "badPolicyMode"              (map Just D.float) Nothing
 
 -- DIRECTIVES TAB
 decodeGetTechniques : Decoder (List Technique)

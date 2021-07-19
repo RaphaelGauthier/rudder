@@ -14,21 +14,39 @@ type alias Targets =
   }
 
 type alias RuleDetails =
-  { id               : String
-  , displayName      : String
-  , categoryId       : String
-  , shortDescription : String
-  , longDescription  : String
-  , enabled          : Bool
-  , isSystem         : Bool
-  , directives       : List String
-  , targets          : Targets
+  { id                : String
+  , displayName       : String
+  , categoryId        : String
+  , shortDescription  : String
+  , longDescription   : String
+  , enabled           : Bool
+  , isSystem          : Bool
+  , directives        : List String
+  , targets           : Targets
   }
 
 type alias RuleCompliance =
-  { ruleId           : String
-  , mode             : String
-  , compliance       : Float
+  { ruleId            : String
+  , mode              : String
+  , compliance        : Float
+  , complianceDetails : ComplianceDetails
+  }
+
+type alias ComplianceDetails =
+  { successNotApplicable       : Maybe Float
+  , successAlreadyOK           : Maybe Float
+  , successRepaired            : Maybe Float
+  , error                      : Maybe Float
+  , auditCompliant             : Maybe Float
+  , auditNonCompliant          : Maybe Float
+  , auditError                 : Maybe Float
+  , auditNotApplicable         : Maybe Float
+  , unexpectedUnknownComponent : Maybe Float
+  , unexpectedMissingComponent : Maybe Float
+  , noReport                   : Maybe Float
+  , reportsDisabled            : Maybe Float
+  , applying                   : Maybe Float
+  , badPolicyMode              : Maybe Float
   }
 
 type alias Directive =
@@ -82,3 +100,4 @@ type Msg
   | GetRuleDetailsResult     (Result Error RuleDetails)
   | OpenRuleDetails String
   | CloseRuleDetails
+  | GetRulesComplianceResult (Result Error (List RuleCompliance))

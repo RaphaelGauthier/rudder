@@ -1,6 +1,6 @@
 module Init exposing (..)
 
-import ApiCalls exposing (getRulesTree, getTechniques, getDirectives, getPolicyMode, getGroupsTree)
+import ApiCalls exposing (getRulesTree, getTechniques, getDirectives, getPolicyMode, getGroupsTree, getRulesCompliance)
 import DataTypes exposing (..)
 
 
@@ -22,6 +22,7 @@ init flags =
       , getTechniques      initModel
       , getDirectives      initModel
       , getGroupsTree      initModel
+      , getRulesCompliance initModel
       ]
   in
     ( initModel
