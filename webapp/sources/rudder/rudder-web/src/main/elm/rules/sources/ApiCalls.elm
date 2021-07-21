@@ -88,6 +88,22 @@ getGroupsTree model =
   in
     send GetGroupsTreeResult req
 
+getTechniquesTree : Model -> Cmd Msg
+getTechniquesTree model =
+  let
+    req =
+      request
+        { method          = "GET"
+        , headers         = []
+        , url             = getUrl model "/directives/tree"
+        , body            = emptyBody
+        , expect          = expectJson decodeGetTechniquesTree
+        , timeout         = Nothing
+        , withCredentials = False
+        }
+  in
+    send GetTechniquesTreeResult req
+
 getRuleDetails : Model -> String -> Cmd Msg
 getRuleDetails model ruleId =
   let

@@ -1,6 +1,6 @@
 module Init exposing (..)
 
-import ApiCalls exposing (getRulesTree, getTechniques, getDirectives, getPolicyMode, getGroupsTree, getRulesCompliance)
+import ApiCalls exposing (getRulesTree, getTechniques, getDirectives, getPolicyMode, getGroupsTree, getTechniquesTree, getRulesCompliance)
 import DataTypes exposing (..)
 
 
@@ -12,9 +12,10 @@ init : { contextPath : String } -> ( Model, Cmd Msg )
 init flags =
   let
 
-    initRulesTree  = Category "" "" [] []
-    initGroupsTree = GroupCat "" "" "" "" [] []
-    initModel = Model flags.contextPath Information False False Nothing "" initRulesTree [] [] initGroupsTree []
+    initRulesTree      = Category "" "" [] []
+    initGroupsTree     = GroupCat "" "" "" "" [] []
+    initTecnhiquesTree = TechniqueCat "" "" [] []
+    initModel = Model flags.contextPath Information False False Nothing "" initRulesTree [] [] initGroupsTree initTecnhiquesTree []
 
     listInitActions =
       [ getPolicyMode      initModel
@@ -22,6 +23,7 @@ init flags =
       , getTechniques      initModel
       , getDirectives      initModel
       , getGroupsTree      initModel
+      , getTechniquesTree  initModel
       , getRulesCompliance initModel
       ]
   in

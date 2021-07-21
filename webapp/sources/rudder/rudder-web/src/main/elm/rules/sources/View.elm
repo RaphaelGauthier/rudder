@@ -8,6 +8,7 @@ import List exposing (any, intersperse, map, sortWith)
 import List.Extra exposing (minimumWith, find)
 import String exposing (lines, fromFloat)
 import ApiCalls exposing (getRuleDetails)
+import NaturalOrdering exposing (compare, compareOn)
 
 view : Model -> Html Msg
 view model =
@@ -141,6 +142,13 @@ view model =
               Category _ _ _ _ -> text ""
       in
         List.map rowTable rulesList
+
+    badgePolicyMode : Directive -> Html Msg
+    badgePolicyMode d =
+      let
+        policyMode = if d.policyMode == "default" then model.policyMode else d.policyMode
+      in
+        span [class ("rudder-label label-sm label-" ++ policyMode)][]
 
     compareRulesTreeItem: RulesTreeItem -> RulesTreeItem -> Order
     compareRulesTreeItem a b =
@@ -300,13 +308,6 @@ view model =
               ]
           Directives    ->
             let
-              badgePolicyMode : Directive -> Html Msg
-              badgePolicyMode d =
-                let
-                  policyMode = if d.policyMode == "default" then model.policyMode else d.policyMode
-                in
-                  span [class ("rudder-label label-sm label-" ++ policyMode)][]
-
               buildTableRow : String -> Html Msg
               buildTableRow id =
                 let
@@ -323,24 +324,26 @@ view model =
                 in
                   tr[](rowDirective)
 
-              buildListRow : String -> Html Msg
-              buildListRow id =
+              buildListRow : List String -> List (Html Msg)
+              buildListRow ids =
                 let
-                  directive = find (\dir -> dir.id == id) model.directives
-                  rowDirective = case directive of
-                    Nothing -> li[class "empty"][text ("Cannot find details of Directive " ++ id)]
-                    Just d  ->
-                      li[]
-                      [ span[class "fa fa-file-text"][]
-                      , a[href ("/rudder/secure/configurationManager/directiveManagement#" ++ d.id)]
-                        [ badgePolicyMode d
-                        , span [class "target-name"][text d.displayName]
-                        ]
-                      , span [class "target-remove"][ i [class "fa fa-times"][] ]
-                      , span [class "border"][]
+                  --Get more information about directives, to correctly sort them by displayName
+                  directives = model.directives
+                    |> List.sortWith (compareOn .displayName)
+                    |> List.filter (\d -> List.member d.id ids)
+
+                  rowDirective  : Directive -> Html Msg
+                  rowDirective directive =
+                    li[]
+                    [ a[href ("/rudder/secure/configurationManager/directiveManagement#" ++ directive.id)]
+                      [ badgePolicyMode directive
+                      , span [class "target-name"][text directive.displayName, text "-  ", text (String.fromInt (List.length directives))]
                       ]
+                    , span [class "target-remove", onClick (SelectDirective directive.id)][ i [class "fa fa-times"][] ]
+                    , span [class "border"][]
+                    ]
                 in
-                  rowDirective
+                    List.map rowDirective directives
             in
 
               if model.editDirectives == False then
@@ -362,42 +365,143 @@ view model =
                         ]
                       ]
                     , tbody[]
-                      ( List.map buildTableRow rule.directives )
+                      ( if(List.length rule.directives > 0) then
+                          List.map buildTableRow rule.directives
+                        else
+                          [ tr[]
+                            [ td[colspan 2, class "dataTables_empty"][text "There is no directive applied"]
+                            ]
+                          ]
+                      )
                     ]
                   ]
                 ]
               
               else
-                div[class "row flex-container"]
-                [ div[class "list-edit col-xs-12 col-sm-6 col-lg-7"]
-                  [ div[class "list-container"]
-                    [ div[class "list-heading"]
-                      [ h4[][text "Apply these directives"]
-                      , div [class "btn-actions"]
-                        [ button[class "btn btn-sm btn-default", onClick (EditDirectives False)][text "Cancel"]
-                        , button[class "btn btn-sm btn-success"][text "Save"]
+                let
+                  buildDirectivesTree : TechniquesTreeItem -> Html Msg
+                  buildDirectivesTree item =
+                    case item of
+                      Technique id ->
+                        let
+                          directivesList = model.directives
+                            |> List.filter (\d -> d.techniqueName == id)
+                            |> List.sortWith (compareOn .displayName)
+                            |> List.map    (\d ->
+                              let
+                                selectedClass = if (List.member d.id rule.directives) then " item-selected" else ""
+                              in
+                                li [class "jstree-node jstree-leaf"]
+                                [ i[class "jstree-icon jstree-ocl"][]
+                                , a[href "#", class ("jstree-anchor" ++ selectedClass), onClick (SelectDirective d.id)]
+                                  [ badgePolicyMode d
+                                  , span [class "treeGroupName tooltipable"][text d.displayName]
+                                  ]
+                                ])
+                        in
+                          if List.length directivesList > 0 then
+                            li [class "jstree-node jstree-open"]
+                            [ i[class "jstree-icon jstree-ocl"][]
+                            , a[href "#", class "jstree-anchor"]
+                              [ i [class "jstree-icon jstree-themeicon fa fa-sitemap jstree-themeicon-custom"][]
+                              , span [class "treeGroupName tooltipable"][text id]
+                              ]
+                            , ul[class "jstree-children"](directivesList)
+                            ]
+                          else
+                            text ""
+
+                      TechniqueCat name description lCat lTec ->
+                        let
+                          checkNbDirectives : TechniquesTreeItem -> Int
+                          checkNbDirectives itm =
+                            case itm of
+                              Technique tid ->
+                                let
+                                  nbDirectives = model.directives
+                                    |> List.filter (\d -> d.techniqueName == tid)
+                                    |> List.length
+                                in
+                                  nbDirectives
+
+                              TechniqueCat _ _ tlCat tlTec ->
+                                let
+                                  groupList    = (List.append tlCat tlTec)
+                                  nbDirectives = List.sum (List.map checkNbDirectives groupList)
+                                in
+                                  nbDirectives
+
+                          compareTechniquesTreeItem: TechniquesTreeItem -> TechniquesTreeItem -> Order
+                          compareTechniquesTreeItem a b =
+                            let
+                              ca = case a of
+                                TechniqueCat gname _ _ _-> gname
+                                Technique gname         -> gname
+                              cb = case b of
+                                TechniqueCat gname _ _ _-> gname
+                                Technique gname         -> gname
+                            in
+                              if ca > cb then GT else if ca < cb then LT else EQ
+
+
+                          childsItem   = List.sortWith compareTechniquesTreeItem (List.append lCat lTec)
+                          childsList   = ul[class "jstree-children"](List.map buildDirectivesTree childsItem)
+
+                        in
+                          if(checkNbDirectives item > 0) then
+                            li[class "jstree-node jstree-open"]
+                            [ i[class "jstree-icon jstree-ocl"][]
+                            , a[href "#", class "jstree-anchor"]
+                              [ i [class "jstree-icon jstree-themeicon fa fa-folder jstree-themeicon-custom"][]
+                              , span [class "treeGroupCategoryName tooltipable"][text name]
+                              ]
+                            , childsList
+                            ]
+                          else
+                            text ""
+
+                in
+                  div[class "row flex-container"]
+                  [ div[class "list-edit col-xs-12 col-sm-6 col-lg-7"]
+                    [ div[class "list-container"]
+                      [ div[class "list-heading"]
+                        [ h4[][text "Apply these directives"]
+                        , div [class "btn-actions"]
+                          [ button[class "btn btn-sm btn-default", onClick (EditDirectives False)][text "Cancel"]
+                          , button[class "btn btn-sm btn-success"][text "Save"]
+                          ]
                         ]
+                      , ul[class "directives applied-list"]
+                        ( if(List.length rule.directives > 0) then
+                           (buildListRow rule.directives)
+                          else
+                           [ li [class "empty"]
+                             [ span [] [text "There is no directive applied."]
+                             , span [class "warning-sign"][i [class "fa fa-info-circle"][]]
+                             ]
+                           ]
+                        )
                       ]
-                    , ul[class "directives applied-list"]
-                      ( List.map buildListRow rule.directives )
+                    ]
+                  , div [class "tree-edit col-xs-12 col-sm-6 col-lg-5"]
+                    [ div [class "tree-container"]
+                      [ div [class "tree-heading"]
+                        [ h4 []
+                          [ i [class "fa fa-check"][]
+                          , text "Select directives"
+                          ]
+                        , i [class "fa fa-bars"][]
+                        ]
+                        , div [class "jstree jstree-default"]
+                          [ ul[class "jstree-container-ul jstree-children"][(buildDirectivesTree model.techniquesTree)]
+                          ]
+                      ]
                     ]
                   ]
-                , div [class "tree-edit col-xs-12 col-sm-6 col-lg-5"]
-                  [ div [class "tree-container"]
-                    [ div [class "tree-heading"]
-                      [ h4 []
-                        [ i [class "fa fa-check"][]
-                        , text "Select directives"
-                        ]
-                      , i [class "fa fa-bars"][]
-                      ]
-                    ]
-                  ]
-                ]
           Groups        ->
             let
-              badgePolicyMode : String -> Html Msg
-              badgePolicyMode p =
+              badgePolicyModeGroup : String -> Html Msg
+              badgePolicyModeGroup p =
                 let
                   policyMode = if p == "default" then model.policyMode else p
                 in
@@ -409,7 +513,7 @@ view model =
                   rowIncludeGroup = li[]
                     [ span[class "fa fa-file-text"][]
                     , a[href ("/rudder/secure/configurationManager/#" ++ "")]
-                      [ badgePolicyMode "default"
+                      [ badgePolicyModeGroup "default"
                       , span [class "target-name"][text id]
                       ]
                     , span [class "target-remove"][ i [class "fa fa-times"][] ]

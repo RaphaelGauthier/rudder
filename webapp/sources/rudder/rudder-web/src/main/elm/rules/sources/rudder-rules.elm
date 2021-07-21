@@ -7,7 +7,7 @@ import Init exposing (init, subscriptions)
 import View exposing (view)
 import Result
 import ApiCalls exposing (getRuleDetails)
-import Debug
+import List.Extra exposing (remove)
 
 main =
   Browser.element
@@ -70,6 +70,15 @@ update msg model =
         Err err ->
           processApiError err model
 
+    GetTechniquesTreeResult res ->
+      case res of
+        Ok t ->
+          ( { model | techniquesTree = t }
+            , Cmd.none
+          )
+        Err err ->
+          processApiError err model
+
     ChangeTabFocus newTab ->
       if model.tab == newTab then
         (model, Cmd.none)
@@ -105,6 +114,25 @@ update msg model =
           ( { model | rulesCompliance  = r } , Cmd.none )
         Err err ->
           (model, Cmd.none)
+
+    SelectDirective directiveId ->
+      let
+        selectedRule = model.selectedRule
+        newModel    = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              isSelected = List.member directiveId r.directives
+              listDirectives =
+                if isSelected == True then
+                  remove directiveId r.directives
+                else
+                  directiveId :: r.directives
+              newSelectedRule = {r | directives = listDirectives}
+            in
+              {model | selectedRule = Just newSelectedRule}
+      in
+        ( newModel , Cmd.none )
 
 processApiError : Error -> Model -> ( Model, Cmd Msg )
 processApiError err model =

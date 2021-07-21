@@ -60,18 +60,22 @@ type alias Directive =
   , policyMode       : String
   }
 
-type alias Technique =
+type alias Techniquex =
   { name     : String
   , versions : List String
   }
+
+type RulesTreeItem
+  = Category String String (List RulesTreeItem) (List RulesTreeItem)
+  | Rule String String String Bool
 
 type GroupsTreeItem
   = GroupCat String String String String (List GroupsTreeItem) (List GroupsTreeItem)
   | Group String String String (List String) Bool Bool
 
-type RulesTreeItem
-  = Category String String (List RulesTreeItem) (List RulesTreeItem)
-  | Rule String String String Bool
+type TechniquesTreeItem
+  = TechniqueCat String String (List TechniquesTreeItem) (List TechniquesTreeItem)
+  | Technique String -- (List String)
 
 type alias Model =
   { contextPath     : String
@@ -81,18 +85,20 @@ type alias Model =
   , selectedRule    : Maybe RuleDetails
   , policyMode      : String
   , rulesTree       : RulesTreeItem
-  , techniques      : List Technique
+  , techniques      : List Techniquex
   , directives      : List Directive
   , groupsTree      : GroupsTreeItem
+  , techniquesTree  : TechniquesTreeItem
   , rulesCompliance : List RuleCompliance
   }
 
 type Msg
-  = GetRulesResult       (Result Error RulesTreeItem)
-  | GetTechniquesResult  (Result Error (List Technique))
-  | GetDirectivesResult  (Result Error (List Directive))
-  | GetPolicyModeResult  (Result Error String)
-  | GetGroupsTreeResult  (Result Error GroupsTreeItem)
+  = GetRulesResult          (Result Error RulesTreeItem)
+  | GetTechniquesResult     (Result Error (List Techniquex))
+  | GetDirectivesResult     (Result Error (List Directive))
+  | GetPolicyModeResult     (Result Error String)
+  | GetGroupsTreeResult     (Result Error GroupsTreeItem)
+  | GetTechniquesTreeResult (Result Error TechniquesTreeItem)
   | CallApi (Model -> Cmd Msg)
   | ChangeTabFocus TabMenu
   | EditDirectives Bool
@@ -101,3 +107,4 @@ type Msg
   | OpenRuleDetails String
   | CloseRuleDetails
   | GetRulesComplianceResult (Result Error (List RuleCompliance))
+  | SelectDirective String

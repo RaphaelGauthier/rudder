@@ -79,13 +79,13 @@ decodeComplianceDetails =
     |> optional "badPolicyMode"              (map Just D.float) Nothing
 
 -- DIRECTIVES TAB
-decodeGetTechniques : Decoder (List Technique)
+decodeGetTechniques : Decoder (List Techniquex)
 decodeGetTechniques =
-  D.at ["data", "techniques" ] (D.list decodeTechnique)
+  D.at ["data", "techniques" ] (D.list decodeTechniquex)
 
-decodeTechnique : Decoder Technique
-decodeTechnique =
-  succeed Technique
+decodeTechniquex : Decoder Techniquex
+decodeTechniquex =
+  succeed Techniquex
     |> required "name"      D.string
     |> required "versions" (D.list D.string)
 
@@ -105,6 +105,22 @@ decodeDirective =
     |> required "system"           D.bool
     |> required "policyMode"       D.string
 
+decodeGetTechniquesTree : Decoder TechniquesTreeItem
+decodeGetTechniquesTree =
+  D.at ["data", "directives"] (index 0 decodeTechniqueCat)
+
+decodeTechniqueCat : Decoder TechniquesTreeItem
+decodeTechniqueCat =
+  succeed TechniqueCat
+    |> required "name"           D.string
+    |> required "description"    D.string
+    |> required "subCategories" (D.list (D.lazy (\_ -> decodeTechniqueCat)))
+    |> required "techniques"    (D.list decodeTechnique)
+
+decodeTechnique : Decoder TechniquesTreeItem
+decodeTechnique =
+  succeed Technique
+    |> required "name"          D.string
 
 -- GROUPS TAB
 decodeGetGroupsTree : Decoder GroupsTreeItem

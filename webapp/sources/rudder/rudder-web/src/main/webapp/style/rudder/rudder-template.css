@@ -57,9 +57,41 @@
   width: calc(100% - 15px);
   cursor: pointer;
 }
+.content-wrapper .rudder-template .jstree .jstree-anchor.item-selected {
+  background-color: #F1F9DF;
+}
 .content-wrapper .rudder-template .jstree .jstree-anchor:hover {
   background-color: #e7f4f9;
 }
+.content-wrapper .rudder-template .tree-edit .jstree .jstree-leaf .jstree-anchor:before {
+  content: initial;
+  position: absolute;
+  left: 14px;
+  font-family: "Font Awesome 5 Free";
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 900;
+  font-size: 18px;
+  text-rendering: auto;
+  line-height: 1;
+  color: #8d95a5;
+}
+.content-wrapper .rudder-template .tree-edit .jstree .jstree-leaf .jstree-anchor:hover:before {
+  content: "\f067";
+  opacity: .2;
+}
+.content-wrapper .rudder-template .tree-edit .jstree .jstree-leaf .jstree-anchor.item-selected:before {
+  content: "\f00c";
+  opacity: 1;
+}
+.content-wrapper .rudder-template .tree-edit .jstree .jstree-leaf .jstree-anchor.item-selected:hover:before {
+  content: "\f068";
+  opacity: .2;
+}
+
 .content-wrapper .rudder-template .jstree .jstree-anchor .btn.create{
   margin-left: auto;
   min-width: 25px;
@@ -409,6 +441,10 @@
 .rudder-template .main-details > .main-table:first-child .dataTable > tbody > tr:nth-child(even):hover{
   background-color: #e2f2ff;
 }
+.rudder-template .tab-table-content .dataTable > tbody > tr > td.dataTables_empty{
+  padding: 12px 15px;
+  background-color: #fcfcfc;
+}
 /* === JUMBOTRON === */
 .rudder-template .template-main .jumbotron {
   color: #6c7586;
@@ -522,8 +558,18 @@
   padding: 10px 15px;
 }
 .row > .tree-edit {
+  display: flex;
   margin: -10px 0;
   box-shadow: 8px 0px 10px 10px #00000030;
+}
+.row > .tree-edit > .tree-container{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.row > .tree-edit > .tree-container .jstree{
+  margin: 0 -15px;
+  overflow: auto;
 }
 .tree-container .tree-heading {
   background-color: #F7F7F7;
@@ -576,7 +622,9 @@
 .list-container .list-heading.except{
   border-bottom: 4px solid #d43f3a;
 }
-
+.list-container .list-heading .btn-actions .btn{
+  margin-left: 10px;
+}
 .tab-table-content .table-header .form-control{
   max-width: 420px;
 }
