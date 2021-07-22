@@ -63,34 +63,6 @@
 .content-wrapper .rudder-template .jstree .jstree-anchor:hover {
   background-color: #e7f4f9;
 }
-.content-wrapper .rudder-template .tree-edit .jstree .jstree-leaf .jstree-anchor:before {
-  content: initial;
-  position: absolute;
-  left: 14px;
-  font-family: "Font Awesome 5 Free";
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  display: inline-block;
-  font-style: normal;
-  font-variant: normal;
-  font-weight: 900;
-  font-size: 18px;
-  text-rendering: auto;
-  line-height: 1;
-  color: #8d95a5;
-}
-.content-wrapper .rudder-template .tree-edit .jstree .jstree-leaf .jstree-anchor:hover:before {
-  content: "\f067";
-  opacity: .2;
-}
-.content-wrapper .rudder-template .tree-edit .jstree .jstree-leaf .jstree-anchor.item-selected:before {
-  content: "\f00c";
-  opacity: 1;
-}
-.content-wrapper .rudder-template .tree-edit .jstree .jstree-leaf .jstree-anchor.item-selected:hover:before {
-  content: "\f068";
-  opacity: .2;
-}
 
 .content-wrapper .rudder-template .jstree .jstree-anchor .btn.create{
   margin-left: auto;
@@ -258,7 +230,6 @@
 }
 .tags-container .btn-group.btn-group-xs .btn.btn-default:last-of-type{
   border: 1px solid #ccc !important;
-  border-left: none !important;
 }
 /* === MAIN === */
 .rudder-template .template-main{
@@ -570,6 +541,9 @@
 .row > .tree-edit > .tree-container .jstree{
   margin: 0 -15px;
   overflow: auto;
+}
+.content-wrapper .rudder-template .tree-edit > .tree-container .jstree .jstree-anchor {
+  cursor: default;
 }
 .tree-container .tree-heading {
   background-color: #F7F7F7;

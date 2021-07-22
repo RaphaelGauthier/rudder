@@ -13,6 +13,11 @@ type alias Targets =
   , exclude : List String
   }
 
+type alias Tag =
+  { key   : String
+  , value : String
+  }
+
 type alias RuleDetails =
   { id                : String
   , displayName       : String
@@ -23,6 +28,7 @@ type alias RuleDetails =
   , isSystem          : Bool
   , directives        : List String
   , targets           : Targets
+  , tags              : List Tag
   }
 
 type alias RuleCompliance =
@@ -65,6 +71,10 @@ type alias Techniquex =
   , versions : List String
   }
 
+type alias RuleUI =
+  { newTag : Tag
+  }
+
 type RulesTreeItem
   = Category String String (List RulesTreeItem) (List RulesTreeItem)
   | Rule String String String Bool
@@ -90,21 +100,32 @@ type alias Model =
   , groupsTree      : GroupsTreeItem
   , techniquesTree  : TechniquesTreeItem
   , rulesCompliance : List RuleCompliance
+  , ruleUI          : RuleUI
   }
 
 type Msg
   = GetRulesResult          (Result Error RulesTreeItem)
-  | GetTechniquesResult     (Result Error (List Techniquex))
-  | GetDirectivesResult     (Result Error (List Directive))
-  | GetPolicyModeResult     (Result Error String)
-  | GetGroupsTreeResult     (Result Error GroupsTreeItem)
-  | GetTechniquesTreeResult (Result Error TechniquesTreeItem)
-  | CallApi (Model -> Cmd Msg)
   | ChangeTabFocus TabMenu
   | EditDirectives Bool
   | EditGroups Bool
-  | GetRuleDetailsResult     (Result Error RuleDetails)
   | OpenRuleDetails String
   | CloseRuleDetails
-  | GetRulesComplianceResult (Result Error (List RuleCompliance))
   | SelectDirective String
+  | SelectGroup String Bool
+  | UpdateRuleName String
+  | UpdateRuleCategory String
+  | UpdateRuleShortDesc String
+  | UpdateRuleLongDesc  String
+  | UpdateTagKey String
+  | UpdateTagVal String
+  | AddTag
+--| RemoveTag String
+  | CallApi                  (Model -> Cmd Msg)
+  | GetTechniquesResult      (Result Error (List Techniquex))
+  | GetDirectivesResult      (Result Error (List Directive))
+  | GetPolicyModeResult      (Result Error String)
+  | GetGroupsTreeResult      (Result Error GroupsTreeItem)
+  | GetTechniquesTreeResult  (Result Error TechniquesTreeItem)
+  | GetRuleDetailsResult     (Result Error RuleDetails)
+  | GetRulesComplianceResult (Result Error (List RuleCompliance))
+  | SaveRuleDetails          (Result Error RuleDetails)

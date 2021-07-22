@@ -1,8 +1,11 @@
 module ApiCalls exposing (..)
 
-import DataTypes exposing (Model, Msg(..))
-import Http exposing (emptyBody, expectJson, jsonBody, request, send)
+import DataTypes exposing (..)
+import Dict
+import Http exposing (..)
 import JsonDecoder exposing (..)
+import JsonEncoder exposing (..)
+import Json.Decode
 
 getUrl: DataTypes.Model -> String -> String
 getUrl m url =
@@ -135,3 +138,19 @@ getRulesCompliance model =
         }
   in
     send GetRulesComplianceResult req
+
+saveRuleDetails : RuleDetails -> Bool -> Model ->  Cmd Msg
+saveRuleDetails ruleDetails creation model =
+  let
+    req =
+      request
+        { method  = if creation then "PUT" else "POST"
+        , headers = []
+        , url     = getUrl model ("/rules/"++ruleDetails.id)
+        , body    = encodeRuleDetails ruleDetails |> jsonBody
+        , expect  = expectJson decodeGetRuleDetails
+        , timeout = Nothing
+        , withCredentials = False
+        }
+  in
+    send SaveRuleDetails req

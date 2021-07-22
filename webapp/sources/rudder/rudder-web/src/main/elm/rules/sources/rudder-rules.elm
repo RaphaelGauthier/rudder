@@ -6,7 +6,7 @@ import Http exposing (Error)
 import Init exposing (init, subscriptions)
 import View exposing (view)
 import Result
-import ApiCalls exposing (getRuleDetails)
+import ApiCalls exposing (getRuleDetails, getRulesTree)
 import List.Extra exposing (remove)
 
 main =
@@ -103,10 +103,10 @@ update msg model =
           (model, Cmd.none)
 
     OpenRuleDetails rId ->
-        (model, (getRuleDetails model rId))
+      (model, (getRuleDetails model rId))
 
     CloseRuleDetails ->
-        ( { model | selectedRule  = Nothing } , Cmd.none )
+      ( { model | selectedRule  = Nothing } , Cmd.none )
 
     GetRulesComplianceResult res ->
       case res of
@@ -133,6 +133,144 @@ update msg model =
               {model | selectedRule = Just newSelectedRule}
       in
         ( newModel , Cmd.none )
+
+    SelectGroup groupId includeBool->
+      let
+        selectedRule = model.selectedRule
+        newModel     = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              ruleTargets  = r.targets
+
+              isIncluded = List.member groupId ruleTargets.include
+              isExcluded = List.member groupId ruleTargets.exclude
+              newRuleTargets  = case (includeBool, isIncluded, isExcluded) of
+                (True, True, _)  -> {ruleTargets | include = remove groupId ruleTargets.include}
+                (True, _, True)  -> {ruleTargets | include = groupId :: ruleTargets.include, exclude = remove groupId ruleTargets.exclude}
+                (False, True, _) -> {ruleTargets | include = remove groupId ruleTargets.include, exclude = groupId :: ruleTargets.exclude}
+                (False, _, True) -> {ruleTargets | exclude = remove groupId ruleTargets.exclude}
+                (True, False, False)  -> {ruleTargets | include = groupId :: ruleTargets.include}
+                (False, False, False) -> {ruleTargets | exclude = groupId :: ruleTargets.exclude}
+
+              newSelectedRule = {r | targets = newRuleTargets}
+            in
+              {model | selectedRule = Just newSelectedRule}
+      in
+        ( newModel , Cmd.none )
+
+    UpdateRuleName name ->
+      let
+        selectedRule = model.selectedRule
+        newModel    = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              newSelectedRule = {r | displayName = name}
+            in
+              {model | selectedRule = Just newSelectedRule}
+      in
+        ( newModel , Cmd.none )
+
+    UpdateRuleCategory category ->
+      let
+        selectedRule = model.selectedRule
+        newModel    = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              newSelectedRule = {r | categoryId = category}
+            in
+              {model | selectedRule = Just newSelectedRule}
+      in
+        ( newModel , Cmd.none )
+
+    UpdateRuleShortDesc desc ->
+      let
+        selectedRule = model.selectedRule
+        newModel    = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              newSelectedRule = {r | shortDescription = desc}
+            in
+              {model | selectedRule = Just newSelectedRule}
+      in
+        ( newModel , Cmd.none )
+
+    UpdateRuleLongDesc desc ->
+      let
+        selectedRule = model.selectedRule
+        newModel    = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              newSelectedRule = {r | longDescription = desc}
+            in
+              {model | selectedRule = Just newSelectedRule}
+      in
+        ( newModel , Cmd.none )
+
+    UpdateTagKey val ->
+      let
+        selectedRule = model.selectedRule
+        ruleUI       = model.ruleUI
+        tag          = ruleUI.newTag
+        newModel     = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              newTag    = {tag    | key    = val   }
+              newRuleUI = {ruleUI | newTag = newTag}
+            in
+              {model | ruleUI = newRuleUI}
+      in
+        ( newModel , Cmd.none )
+
+    UpdateTagVal val ->
+      let
+        selectedRule = model.selectedRule
+        ruleUI       = model.ruleUI
+        tag          = ruleUI.newTag
+        newModel     = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              newTag    = {tag    | value  = val   }
+              newRuleUI = {ruleUI | newTag = newTag}
+            in
+              {model | ruleUI = newRuleUI}
+      in
+        ( newModel , Cmd.none )
+
+    AddTag ->
+      let
+        selectedRule = model.selectedRule
+        ruleUI       = model.ruleUI
+        tag          = ruleUI.newTag
+        newModel     = case selectedRule of
+          Nothing -> model
+          Just r  ->
+            let
+              newRule = {r | tags = tag :: r.tags}
+              newTag      = {tag    | key  = "", value = ""}
+              newRuleUI   = {ruleUI | newTag = newTag}
+            in
+              {model | ruleUI = newRuleUI, selectedRule = Just newRule}
+      in
+        ( newModel , Cmd.none )
+
+
+    SaveRuleDetails (Ok ruleDetails) ->
+      let
+        newSelectedRule = Just ruleDetails
+        newModel        = {model | selectedRule = newSelectedRule}
+      in
+      -- TODO // Update Rules Tree
+      -- TODO // Display success notifications
+        ( model , Cmd.none)
+    SaveRuleDetails (Err err) ->
+      processApiError err model
 
 processApiError : Error -> Model -> ( Model, Cmd Msg )
 processApiError err model =

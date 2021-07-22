@@ -2,9 +2,10 @@ module JsonDecoder exposing (..)
 
 import DataTypes exposing (..)
 import Json.Decode as D exposing (Decoder, andThen, fail, string, succeed, index, bool, oneOf, map, map2, float)
-import Json.Decode.Pipeline exposing (required, optional)
+import Json.Decode.Pipeline exposing (..)
 import String exposing (toLower)
-
+import Dict exposing (Dict)
+import Tuple
 
 -- GENERAL
 decodeGetPolicyMode : Decoder String
@@ -47,6 +48,15 @@ decodeRuleDetails =
     |> required "system"           D.bool
     |> required "directives"      (D.list D.string)
     |> required "targets"         (index 0 decodeTargets)
+    |> required "tags"            (D.list (D.keyValuePairs D.string) |> andThen toTags)
+
+toTags : List (List ( String, String )) -> Decoder (List Tag)
+toTags lst =
+  let
+    concatList = List.concat lst
+  in
+    D.succeed
+      ( List.map (\t -> Tag (Tuple.first t) (Tuple.second t)) concatList )
 
 decodeGetRulesCompliance : Decoder (List RuleCompliance)
 decodeGetRulesCompliance =

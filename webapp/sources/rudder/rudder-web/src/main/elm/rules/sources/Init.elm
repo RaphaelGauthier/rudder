@@ -15,7 +15,8 @@ init flags =
     initRulesTree      = Category "" "" [] []
     initGroupsTree     = GroupCat "" "" "" "" [] []
     initTecnhiquesTree = TechniqueCat "" "" [] []
-    initModel = Model flags.contextPath Information False False Nothing "" initRulesTree [] [] initGroupsTree initTecnhiquesTree []
+    initRuleUI         = RuleUI (Tag "" "")
+    initModel = Model flags.contextPath Information False False Nothing "" initRulesTree [] [] initGroupsTree initTecnhiquesTree [] initRuleUI
 
     listInitActions =
       [ getPolicyMode      initModel

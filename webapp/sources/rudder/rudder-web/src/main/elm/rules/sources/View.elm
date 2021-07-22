@@ -2,17 +2,19 @@ module View exposing (..)
 
 import DataTypes exposing (..)
 import Html exposing (Html, button, div, i, span, text, h1, h4, ul, li, input, a, p, form, label, textarea, select, option, table, thead, tbody, tr, th, td, small)
-import Html.Attributes exposing (id, class, type_, placeholder, value, for, href, colspan, rowspan, style)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (id, class, type_, placeholder, value, for, href, colspan, rowspan, style, selected)
+import Html.Events exposing (onClick, onInput)
 import List exposing (any, intersperse, map, sortWith)
 import List.Extra exposing (minimumWith, find)
 import String exposing (lines, fromFloat)
 import ApiCalls exposing (getRuleDetails)
 import NaturalOrdering exposing (compare, compareOn)
+import ApiCalls exposing (..)
 
 view : Model -> Html Msg
 view model =
   let
+    ruleUI = model.ruleUI
     getListRules : RulesTreeItem -> List (RulesTreeItem)
     getListRules r = 
       case r of
@@ -162,20 +164,38 @@ view model =
       in
         if ca > cb then GT else if ca < cb then LT else EQ 
 
-    buildListCategories : String -> RulesTreeItem -> List(Html Msg)
-    buildListCategories sep c =
+    buildListCategories : RuleDetails -> String -> RulesTreeItem -> List(Html Msg)
+    buildListCategories rule sep c =
       let
         newList = case c of
           Rule _ _ _ _ -> []
           Category id name lCat _ ->
             let
-              currentOption  = [option [value id][text (sep ++ name)]]
+              currentOption  = [option [value id, selected (id == rule.categoryId)][text (sep ++ name)]]
               separator      = sep ++ "└─ "
-              listCategories = List.concat (List.map (buildListCategories separator) (List.sortWith compareRulesTreeItem (lCat)))
+              listCategories = List.concat (List.map (buildListCategories rule separator) (List.sortWith compareRulesTreeItem (lCat)))
             in
               List.append currentOption listCategories
       in
         newList
+
+    buildTagsContainer : RuleDetails -> Html Msg
+    buildTagsContainer rule =
+      let
+        tagsList = List.map (\t ->
+          div [class "btn-group btn-group-xs"]
+            [ button [class "btn btn-default tags-label", type_ "button"]
+              [ i[class "fa fa-tag"][]
+              , span[class "tag-key"][text t.key]
+              , span[class "tag-separator"][text "="]
+              , span[class "tag-value"][text t.value]
+              , span[class "fa fa-search-plus"][]
+              ]
+            ]
+          ) rule.tags
+      in
+        div [class "tags-container form-group"](tagsList)
+
 
     buildRulesTree : RulesTreeItem -> Html Msg
     buildRulesTree item =
@@ -230,7 +250,7 @@ view model =
               , div[class "header-buttons"]
                 [ button [class "btn btn-default", type_ "button"][text "Actions"]
                 , button [class "btn btn-default", type_ "button", onClick CloseRuleDetails][text "Close"  ]
-                , button [class "btn btn-success", type_ "button"][text "Save"   ]
+                , button [class "btn btn-success", type_ "button", onClick (CallApi (saveRuleDetails rule False))][text "Save"   ]
                 ]
               ]
             , div [class "header-description"]
@@ -251,7 +271,7 @@ view model =
               , li[class ("ui-tabs-tab" ++ (if model.tab == Groups        then " ui-tabs-active" else ""))]
                 [ a[onClick (ChangeTabFocus Groups       )]
                   [ text "Groups"
-                  , span[class "badge"][text ""]
+                  , span[class "badge"][text (String.fromInt(List.length rule.targets.include))]
                   ]
                 ]
               , li[class ("ui-tabs-tab" ++ (if model.tab == TechnicalLogs then " ui-tabs-active" else ""))]
@@ -274,35 +294,36 @@ view model =
                 [ div [class "form-group"]
                   [ label[for "rule-name"][text "Name"]
                   , div[]
-                    [ input[ id "rule-name", type_ "text", value rule.displayName, class "form-control" ][] ]
+                    [ input[ id "rule-name", type_ "text", value rule.displayName, class "form-control", onInput UpdateRuleName ][] ]
                   ]
                 , div [class "form-group"]
                   [ label[for "rule-category"][text "Category"]
                   , div[]
-                    [ select[ id "rule-category", class "form-control" ]
-                      ((buildListCategories "") model.rulesTree)
+                    [ select[ id "rule-category", class "form-control", onInput UpdateRuleCategory ]
+                      ((buildListCategories rule "") model.rulesTree)
                     ]
                   ]
                 , div [class "tags-container"]
                   [ label[for "rule-tags-key"][text "Tags"]
                   , div[class "form-group"]
                     [ div[class "input-group"]
-                      [ input[ id "rule-tags-key", type_ "text", placeholder "key", class "form-control" ][]
+                      [ input[ id "rule-tags-key", type_ "text", placeholder "key", class "form-control", onInput UpdateTagKey, value ruleUI.newTag.key][]
                       , span [ class "input-group-addon addon-json"][ text "=" ] 
-                      , input[ type_ "text", placeholder "value", class "form-control" ][]
-                      , span [ class "input-group-btn"][ button [ class "btn btn-success", type_ "button"][ span[class "fa fa-plus"][]] ]
+                      , input[ type_ "text", placeholder "value", class "form-control", onInput UpdateTagVal, value ruleUI.newTag.value][]
+                      , span [ class "input-group-btn"][ button [ class "btn btn-success", type_ "button", onClick AddTag][ span[class "fa fa-plus"][]] ]
                       ]
                     ]
+                  , buildTagsContainer rule
                   ]
                 , div [class "form-group"]
                   [ label[for "rule-short-description"][text "Short description"]
                   , div[]
-                    [ input[ id "rule-short-description", type_ "text", value rule.shortDescription, placeholder "There is no short description", class "form-control" ][] ]
+                    [ input[ id "rule-short-description", type_ "text", value rule.shortDescription, placeholder "There is no short description", class "form-control", onInput UpdateRuleShortDesc  ][] ]
                   ]
                 , div [class "form-group"]
                   [ label[for "rule-long-description"][text "Long description"]
                   , div[]
-                    [ textarea[ id "rule-long-description", value rule.longDescription, placeholder "There is no long description", class "form-control" ][] ]
+                    [ textarea[ id "rule-long-description", value rule.longDescription, placeholder "There is no long description", class "form-control", onInput UpdateRuleLongDesc ][] ]
                   ]
                 ]
               ]
@@ -393,9 +414,12 @@ view model =
                               in
                                 li [class "jstree-node jstree-leaf"]
                                 [ i[class "jstree-icon jstree-ocl"][]
-                                , a[href "#", class ("jstree-anchor" ++ selectedClass), onClick (SelectDirective d.id)]
+                                , a[href "#", class ("jstree-anchor" ++ selectedClass)]
                                   [ badgePolicyMode d
                                   , span [class "treeGroupName tooltipable"][text d.displayName]
+                                  , div [class "treeActions-container"]
+                                    [ span [class "treeActions"][ span [class "tooltipable fa action-icon accept", onClick (SelectDirective d.id)][]]
+                                    ]
                                   ]
                                 ])
                         in
@@ -468,7 +492,7 @@ view model =
                         [ h4[][text "Apply these directives"]
                         , div [class "btn-actions"]
                           [ button[class "btn btn-sm btn-default", onClick (EditDirectives False)][text "Cancel"]
-                          , button[class "btn btn-sm btn-success"][text "Save"]
+                          , button[class "btn btn-sm btn-success", onClick (CallApi (saveRuleDetails rule False))][text "Save"]
                           ]
                         ]
                       , ul[class "directives applied-list"]
@@ -507,8 +531,8 @@ view model =
                 in
                   span [class ("rudder-label label-sm label-" ++ policyMode)][]
 
-              buildIncludeList : String -> Html Msg
-              buildIncludeList id =
+              buildIncludeList : Bool -> String -> Html Msg
+              buildIncludeList includeBool id =
                 let
                   rowIncludeGroup = li[]
                     [ span[class "fa fa-file-text"][]
@@ -516,7 +540,7 @@ view model =
                       [ badgePolicyModeGroup "default"
                       , span [class "target-name"][text id]
                       ]
-                    , span [class "target-remove"][ i [class "fa fa-times"][] ]
+                    , span [class "target-remove", onClick (SelectGroup id includeBool)][ i [class "fa fa-times"][] ]
                     , span [class "border"][]
                     ]
                 in
@@ -558,6 +582,10 @@ view model =
                         , a[href "#", class "jstree-anchor"]
                           [ i [class "jstree-icon jstree-themeicon fa fa-sitemap jstree-themeicon-custom"][]
                           , span [class "treeGroupName tooltipable"][text name, (if dynamic then (small [class "greyscala"][text "- Dynamic"]) else (text ""))]
+                          , div [class "treeActions-container"]
+                            [ span [class "treeActions"][ span [class "tooltipable fa action-icon accept", onClick (SelectGroup id True)][]]
+                            , span [class "treeActions"][ span [class "tooltipable fa action-icon except", onClick (SelectGroup id False)][]]
+                            ]
                           ]
                         ]
 
@@ -598,22 +626,34 @@ view model =
                         [ h4[][text "Apply to Nodes in any of these Groups"]
                         , div [class "btn-actions"]
                           [ button[class "btn btn-sm btn-default", onClick (EditGroups False)][text "Cancel"]
-                          , button[class "btn btn-sm btn-success"][text "Save"]
+                          , button[class "btn btn-sm btn-success", onClick (CallApi (saveRuleDetails rule False))][text "Save"]
                           ]
                         ]
                       , ul[class "groups applied-list"]
-                        ( List.map buildIncludeList ruleTargets.include )
+                        ( if(List.length ruleTargets.include > 0) then
+                           (List.map (buildIncludeList True) ruleTargets.include)
+                          else
+                           [ li [class "empty"]
+                             [ span [] [text "There is no group included."]
+                             , span [class "warning-sign"][i [class "fa fa-info-circle"][]]
+                             ]
+                           ]
+                        )
                       ]
                     , div[class "list-container"]
                       [ div[class "list-heading except"]
                         [ h4[][text "Except to Nodes in any of these Groups"]
-                        , div [class "btn-actions"]
-                          [ button[class "btn btn-sm btn-default", onClick (EditGroups False)][text "Cancel"]
-                          , button[class "btn btn-sm btn-success"][text "Save"]
-                          ]
                         ]
                       , ul[class "groups applied-list"]
-                        ( List.map buildIncludeList ruleTargets.exclude )
+                        ( if(List.length ruleTargets.exclude > 0) then
+                           (List.map (buildIncludeList False) ruleTargets.exclude)
+                          else
+                           [ li [class "empty"]
+                             [ span [] [text "There is no group excluded."]
+                             , span [class "warning-sign"][i [class "fa fa-info-circle"][]]
+                             ]
+                           ]
+                        )
                       ]
                     ]
                   , div [class "tree-edit col-xs-12 col-sm-6 col-lg-5"]

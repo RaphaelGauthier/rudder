@@ -302,10 +302,10 @@ ul.applied-list > .add-target > .fa{
 }
 
 .jstree ul > li .action-icon{
-  color: #3c763d;
+  color: #8fba2b;
 }
 .jstree ul > li .action-icon.except{
-  color: #a94442;
+  color: #d43f3a;
 }
 .jstree ul > li .action-icon:before{
   content: "\f055";
