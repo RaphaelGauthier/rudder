@@ -248,6 +248,12 @@ update msg model =
             ( { model | modal = Just (DeletionValidation rule)} , Cmd.none )
         _ -> (model, Cmd.none)
 
+    OpenDeletionPopupCar category ->
+      case model.mode of
+        EditCategory _ ->
+            ( { model | modal = Just (DeletionValidationCat category)} , Cmd.none )
+        _ -> (model, Cmd.none)
+
     OpenDeactivationPopup rule ->
       case model.mode of
         EditRule _ ->

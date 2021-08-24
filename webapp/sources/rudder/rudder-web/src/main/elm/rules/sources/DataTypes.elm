@@ -18,7 +18,7 @@ type alias Tag =
   , value : String
   }
 
-type ModalState = DeletionValidation Rule | DeactivationValidation Rule
+type ModalState = DeletionValidation Rule | DeactivationValidation Rule | DeletionValidationCat Category
 
 type RuleTarget = NodeGroupId String | Composition  RuleTarget RuleTarget | Special String | Node String | And (List RuleTarget) | Or (List RuleTarget)
 
@@ -183,6 +183,7 @@ type Msg
   | DisableRule
   | CloneRule Rule RuleId
   | OpenDeletionPopup Rule
+  | OpenDeletionPopupCat Category
   | OpenDeactivationPopup Rule
   | ClosePopup Msg
   | Ignore
