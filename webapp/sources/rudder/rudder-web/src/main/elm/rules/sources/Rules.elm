@@ -356,6 +356,16 @@ update msg model =
       in
         (nm , cmd)
 
+    UpdateRuleFilters sortBy ->
+      let
+        oldFilters = model.ruleFilters
+        filters =
+          if sortBy == model.ruleFilters.sortBy then
+            {oldFilters | sortOrder = not oldFilters.sortOrder}
+          else
+            {oldFilters | sortBy = sortBy, sortOrder = True}
+      in
+        ({model | ruleFilters = filters}, Cmd.none)
 
 processApiError : String -> Error -> Model -> ( Model, Cmd Msg )
 processApiError apiName err model =

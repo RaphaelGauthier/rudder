@@ -156,6 +156,21 @@ type Mode
   | EditCategory   EditCategoryDetails
   | CreateCategory EditCategoryDetails
 
+type SortBy
+  = Name
+  | Parent
+  | Status
+  | Compliance
+
+type ItemTree
+  = CategoryItem (Category Rule)
+  | RuleItem Rule
+
+type alias RuleFilters =
+  { sortBy         : SortBy
+  , sortOrder      : Bool
+  }
+
 type alias Model =
   { contextPath     : String
   , mode            : Mode
@@ -167,6 +182,7 @@ type alias Model =
   , directives      : List Directive
   , modal           : Maybe ModalState
   , hasWriteRights  : Bool
+  , ruleFilters     : RuleFilters
   }
 
 type Msg
@@ -202,3 +218,4 @@ type Msg
   | OpenDeactivationPopup Rule
   | ClosePopup Msg
   | Ignore
+  | UpdateRuleFilters SortBy
