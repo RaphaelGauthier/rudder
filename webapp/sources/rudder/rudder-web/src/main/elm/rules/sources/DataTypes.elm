@@ -18,7 +18,7 @@ type alias Tag =
   , value : String
   }
 
-type ModalState = DeletionValidation Rule | DeactivationValidation Rule | DeletionValidationCat (Category Rule)
+type ModalState = NoModal | DeletionValidation Rule | DeactivationValidation Rule | DeletionValidationCat (Category Rule)
 
 type RuleTarget = NodeGroupId String | Composition  RuleTarget RuleTarget | Special String | Node String | And (List RuleTarget) | Or (List RuleTarget)
 
@@ -163,8 +163,14 @@ type SortBy
   | Compliance
 
 type alias RuleFilters =
-  { sortBy         : SortBy
-  , sortOrder      : Bool
+  { sortBy    : SortBy
+  , sortOrder : Bool
+  , filter    : String
+  }
+type alias UI =
+  { ruleFilters   : RuleFilters
+  , modal         : ModalState
+  , hasWriteRights: Bool
   }
 
 type alias Model =
@@ -176,9 +182,7 @@ type alias Model =
   , techniquesTree  : Category Technique
   , rulesCompliance : List RuleCompliance
   , directives      : List Directive
-  , modal           : Maybe ModalState
-  , hasWriteRights  : Bool
-  , ruleFilters     : RuleFilters
+  , ui              : UI
   }
 
 type Msg

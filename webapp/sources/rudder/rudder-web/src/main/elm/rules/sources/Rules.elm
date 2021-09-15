@@ -90,7 +90,7 @@ update msg model =
         _   -> (model, Cmd.none)
 
     EditDirectives flag ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditRule details ->
             ({model | mode = EditRule   {details | editDirectives = flag, tab = Directives}}, Cmd.none)
@@ -101,7 +101,7 @@ update msg model =
         (model, Cmd.none)
 
     EditGroups flag ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditRule details ->
             ({model | mode = EditRule   {details | editGroups = flag, tab = Groups}}, Cmd.none)
@@ -135,7 +135,7 @@ update msg model =
           (model, Cmd.none)
 
     UpdateCategory category ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditCategory details   ->
             ({model | mode = EditCategory   {details | category = category}}, Cmd.none)
@@ -146,7 +146,7 @@ update msg model =
         (model, Cmd.none)
 
     SelectGroup groupId includeBool->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         let
           updateTargets : Rule -> Rule
           updateTargets r =
@@ -176,7 +176,7 @@ update msg model =
         (model, Cmd.none)
 
     UpdateRule rule ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditRule details ->
             ({model | mode = EditRule   {details | rule = rule}}, Cmd.none)
@@ -187,7 +187,7 @@ update msg model =
         (model, Cmd.none)
 
     DisableRule ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditRule details ->
             let
@@ -200,7 +200,7 @@ update msg model =
         (model, Cmd.none)
 
     NewRule id ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         let
           rule        = Rule id "" "rootRuleCategory" "" "" True False [] [] []
           ruleDetails = EditRuleDetails rule rule Information False False (Tag "" "")
@@ -210,7 +210,7 @@ update msg model =
         (model, Cmd.none)
 
     NewCategory id ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         let
           category        = Category id "" "" (SubCategories []) []
           categoryDetails = EditCategoryDetails category category Information
@@ -220,7 +220,7 @@ update msg model =
         (model, Cmd.none)
 
     UpdateNewTag tag ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditRule details ->
             ({model | mode = EditRule   {details | newTag = tag}}, Cmd.none)
@@ -308,7 +308,7 @@ update msg model =
       processApiError "Deleting category" err model
 
     CloneRule rule rulelId ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         let
           newModel = case model.mode of
             EditRule _ ->
@@ -324,48 +324,56 @@ update msg model =
         (model, Cmd.none)
 
     OpenDeletionPopup rule ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditRule _ ->
-              ( { model | modal = Just (DeletionValidation rule)} , Cmd.none )
+            let ui = model.ui
+            in
+              ( { model | ui = {ui | modal = DeletionValidation rule} } , Cmd.none )
           _ -> (model, Cmd.none)
       else
         (model, Cmd.none)
 
     OpenDeletionPopupCat category ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditCategory _ ->
-              ( { model | modal = Just (DeletionValidationCat category)} , Cmd.none )
+            let ui = model.ui
+            in
+              ( { model | ui = {ui | modal = DeletionValidationCat category} } , Cmd.none )
           _ -> (model, Cmd.none)
       else
         (model, Cmd.none)
 
     OpenDeactivationPopup rule ->
-      if model.hasWriteRights then
+      if model.ui.hasWriteRights then
         case model.mode of
           EditRule _ ->
-              ( { model | modal = Just (DeactivationValidation rule)} , Cmd.none )
+            let ui = model.ui
+            in
+              ( { model | ui = {ui | modal = DeactivationValidation rule}} , Cmd.none )
           _ -> (model, Cmd.none)
       else
         (model, Cmd.none)
 
     ClosePopup callback ->
       let
-        (nm,cmd) = update callback { model | modal = Nothing}
+        ui = model.ui
+        (nm,cmd) = update callback { model | ui = { ui | modal = NoModal } }
       in
         (nm , cmd)
 
     UpdateRuleFilters sortBy ->
       let
-        oldFilters = model.ruleFilters
+        ui = model.ui
+        oldFilters = model.ui.ruleFilters
         filters =
-          if sortBy == model.ruleFilters.sortBy then
+          if sortBy == oldFilters.sortBy then
             {oldFilters | sortOrder = not oldFilters.sortOrder}
           else
             {oldFilters | sortBy = sortBy, sortOrder = True}
       in
-        ({model | ruleFilters = filters}, Cmd.none)
+        ({model | ui = { ui | ruleFilters = filters}}, Cmd.none)
 
 processApiError : String -> Error -> Model -> ( Model, Cmd Msg )
 processApiError apiName err model =

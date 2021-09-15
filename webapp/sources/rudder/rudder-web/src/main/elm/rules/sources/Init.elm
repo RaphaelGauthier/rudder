@@ -13,8 +13,9 @@ init flags =
   let
 
     initCategory      = Category "" "" "" (SubCategories []) []
-    initRuleFilters   = RuleFilters Name True
-    initModel = Model flags.contextPath Loading "" initCategory initCategory initCategory [] [] Nothing flags.hasWriteRights initRuleFilters
+    initRuleFilters   = RuleFilters Name True ""
+    initUI = UI initRuleFilters NoModal flags.hasWriteRights
+    initModel = Model flags.contextPath Loading "" initCategory initCategory initCategory [] [] initUI
 
     listInitActions =
       [ getPolicyMode      initModel

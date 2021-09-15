@@ -63,8 +63,8 @@ view model =
         let
           thClass : SortBy -> String
           thClass sortBy =
-            if sortBy == model.ruleFilters.sortBy then
-              if(model.ruleFilters.sortOrder == True) then
+            if sortBy == model.ui.ruleFilters.sortBy then
+              if(model.ui.ruleFilters.sortOrder == True) then
                 "sorting_asc"
               else
                 "sorting_desc"
@@ -100,9 +100,9 @@ view model =
       CreateCategory details ->
         (editionTemplateCat model details True)
 
-    modal = case model.modal of
-      Nothing -> text ""
-      Just (DeletionValidation rule) ->
+    modal = case model.ui.modal of
+      NoModal -> text ""
+      DeletionValidation rule ->
         div [ tabindex -1, class "modal fade in", style "z-index" "1050", style "display" "block" ]
         [ div [ class "modal-dialog" ] [
             div [ class "modal-content" ] [
@@ -123,7 +123,7 @@ view model =
             ]
           ]
         ]
-      Just (DeactivationValidation rule) ->
+      DeactivationValidation rule ->
         let
           txtDisable = if rule.enabled == True then "Disable" else "Enable"
         in
@@ -149,7 +149,7 @@ view model =
               ]
             ]
           ]
-      Just (DeletionValidationCat category) ->
+      DeletionValidationCat category ->
         div [ tabindex -1, class "modal fade in", style "z-index" "1050", style "display" "block" ]
          [ div [ class "modal-dialog" ] [
              div [ class "modal-content" ] [
@@ -178,7 +178,7 @@ view model =
           [ h1[]
             [ span[][text "Rules"]
             ]
-          , ( if model.hasWriteRights == True then
+          , ( if model.ui.hasWriteRights then
               div [class "header-buttons"]
               [ button [class "btn btn-default", type_ "button", onClick (GenerateId (\s -> NewCategory s      ))][text "Add Category"]
               , button [class "btn btn-success", type_ "button", onClick (GenerateId (\s -> NewRule (RuleId s) ))][text "Create"]

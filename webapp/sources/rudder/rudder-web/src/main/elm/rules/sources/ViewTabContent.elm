@@ -43,7 +43,8 @@ buildTagsContainer rule =
   in
     div [class "tags-container form-group"](tagsList)
 
-tabContent model details isNewRule=
+tabContent: Model -> EditRuleDetails -> Bool -> Html Msg
+tabContent model details isNewRule =
   let
       badgePolicyMode : Directive -> Html Msg
       badgePolicyMode d =
@@ -90,7 +91,7 @@ tabContent model details isNewRule=
                 Nothing -> "Category not found"
 
           ruleForm =
-            ( if model.hasWriteRights == True then
+            ( if model.ui.hasWriteRights then
               form[class "col-xs-12 col-sm-6 col-lg-7"]
               [ div [class "form-group"]
                 [ label[for "rule-name"][text "Name"]
@@ -210,7 +211,7 @@ tabContent model details isNewRule=
                   knownDirectives = model.directives
                     |> List.filter (\d -> List.member d.id ids)
                     |> List.sortWith (compareOn .displayName)
-                  in
+                in
                     -- add missing directives
                     let
                       knonwIds = List.map .id knownDirectives
@@ -240,7 +241,7 @@ tabContent model details isNewRule=
             div[class "tab-table-content"]
             [ div [class "table-title"]
               [ h4 [][text "Compliance by Directives"]
-              , ( if model.hasWriteRights == True then
+              , ( if model.ui.hasWriteRights then
                   button [class "btn btn-default btn-sm", onClick (EditDirectives True)][text "Edit"]
                 else
                   text ""
@@ -412,7 +413,7 @@ tabContent model details isNewRule=
             div[class "tab-table-content"]
             [ div [class "table-title"]
               [ h4 [][text "Compliance by Nodes"]
-              , ( if model.hasWriteRights == True then
+              , ( if model.ui.hasWriteRights == True then
                   button [class "btn btn-default btn-sm", onClick (EditGroups True)][text "Edit"]
                 else
                   text ""

@@ -100,7 +100,7 @@ editionTemplate model details isNewRule =
         , div[class "header-buttons"]
           ( button [class "btn btn-default", type_ "button", onClick CloseDetails][text "Close", i [ class "fa fa-times"][]]
           :: (
-            if model.hasWriteRights == True then
+            if model.ui.hasWriteRights then
               [ div [ class "btn-group" ]
                 [ button [ class "btn btn-default dropdown-toggle" , attribute "data-toggle" "dropdown" ] [
                   text "Actions "

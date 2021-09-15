@@ -1,14 +1,11 @@
 module ViewRulesTable exposing (..)
 
 import DataTypes exposing (..)
-import Html exposing (Html, button, div, i, span, text, h1, h4, ul, li, input, a, p, form, label, textarea, select, option, table, thead, tbody, tr, th, td, small)
-import Html.Attributes exposing (id, class, type_, placeholder, value, for, href, colspan, rowspan, style, selected, disabled, attribute)
-import Html.Events exposing (onClick, onInput)
+import Html exposing (Html, text,  tr, td)
+import Html.Events exposing (onClick)
 import List.Extra
 import List
-import String exposing ( fromFloat)
-import NaturalOrdering exposing (compareOn)
-import ApiCalls exposing (..)
+import String
 import ViewUtilsCompliance exposing (buildComplianceBar, getAllComplianceValues)
 
 --
@@ -38,7 +35,7 @@ getRuleCompliance model rId =
 getSortFunction : Model -> Rule -> Rule -> Order
 getSortFunction model r1 r2 =
   let
-    order = case model.ruleFilters.sortBy of
+    order = case model.ui.ruleFilters.sortBy of
       Name       -> compare r1.name r2.name
       Parent     ->
         let
@@ -73,7 +70,7 @@ getSortFunction model r1 r2 =
         in
           compare r1Compliance r2Compliance
   in
-    if model.ruleFilters.sortOrder == True then
+    if model.ui.ruleFilters.sortOrder == True then
       order
     else
       case order of
