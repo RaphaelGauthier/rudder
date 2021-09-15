@@ -88,10 +88,10 @@ view model =
             ]
           ]
 
-      RuleDetails details ->
+      RuleForm details ->
         (editionTemplate model details)
 
-      RuleCategoryDetails details ->
+      CategoryForm details ->
         (editionTemplateCat model details)
 
     modal = case model.ui.modal of

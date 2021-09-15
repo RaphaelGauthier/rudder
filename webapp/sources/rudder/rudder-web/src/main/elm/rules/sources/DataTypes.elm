@@ -146,15 +146,15 @@ type alias ComplianceDetails =
 
 type alias RuleDetailsUI = { editDirectives: Bool, editGroups : Bool, newTag : Tag }
 
-type alias EditRuleDetails = { originRule : Maybe Rule, rule : Rule, tab :  TabMenu, ui : RuleDetailsUI }
+type alias RuleDetails = { originRule : Maybe Rule, rule : Rule, tab :  TabMenu, ui : RuleDetailsUI }
 
-type alias EditCategoryDetails = { originCategory : Maybe (Category Rule), category : Category Rule, tab :  TabMenu}
+type alias CategoryDetails = { originCategory : Maybe (Category Rule), category : Category Rule, tab :  TabMenu}
 
 type Mode
   = Loading
   | RuleTable
-  | RuleDetails   EditRuleDetails
-  | RuleCategoryDetails EditCategoryDetails
+  | RuleForm RuleDetails
+  | CategoryForm CategoryDetails
 
 type SortBy
   = Name
@@ -167,6 +167,7 @@ type alias RuleFilters =
   , sortOrder : Bool
   , filter    : String
   }
+  
 type alias UI =
   { ruleFilters   : RuleFilters
   , modal         : ModalState
@@ -188,19 +189,16 @@ type alias Model =
 type Msg
   = ChangeTabFocus TabMenu
   | GenerateId (String -> Msg)
-  | EditDirectives Bool
-  | EditGroups Bool
-  | GetRuleDetailsResult     (Result Error Rule)
   | OpenRuleDetails RuleId
   | OpenCategoryDetails (Category Rule)
   | CloseDetails
   | SelectGroup RuleTarget Bool
-  | UpdateRule Rule
-  | UpdateCategory (Category Rule)
+  | UpdateRuleForm RuleDetails
+  | UpdateCategoryForm CategoryDetails
   | NewRule RuleId
   | NewCategory String
-  | UpdateNewTag Tag
   | CallApi                  (Model -> Cmd Msg)
+  | GetRuleDetailsResult     (Result Error Rule)
   | GetPolicyModeResult      (Result Error String)
   | GetRulesComplianceResult (Result Error (List RuleCompliance))
   | SaveRuleDetails          (Result Error Rule)

@@ -16,7 +16,7 @@ import Maybe.Extra
 --
 
 
-editionTemplate : Model -> EditRuleDetails -> Html Msg
+editionTemplate : Model -> RuleDetails -> Html Msg
 editionTemplate model details =
   let
     originRule = details.originRule

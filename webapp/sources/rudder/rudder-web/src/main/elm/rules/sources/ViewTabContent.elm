@@ -44,7 +44,7 @@ buildTagsContainer rule =
   in
     div [class "tags-container form-group"](tagsList)
 
-tabContent: Model -> EditRuleDetails  -> Html Msg
+tabContent: Model -> RuleDetails  -> Html Msg
 tabContent model details =
   let
       isNewRule = Maybe.Extra.isNothing details.originRule
@@ -56,7 +56,9 @@ tabContent model details =
           span [class ("rudder-label label-sm label-" ++ policyMode)][]
 
       rule       = details.rule
-      newTag     = details.ui.newTag
+      ui = details.ui
+      newTag     = ui.newTag
+
   in
     case details.tab of
       Information   ->
@@ -69,8 +71,8 @@ tabContent model details =
                   [ p[][text "You are creating a new rule. You may already want to apply directives and groups to it."]
                   , p[][text "To do so, please go to their corresponding tab, or use the shortcuts below:"]
                   , div[class "action-btn"]
-                    [ button [class "btn btn-default", onClick (EditDirectives True)][text "Select directives", span[class "fa fa-plus"][]]
-                    , button [class "btn btn-default", onClick (EditGroups True    )][text "Select groups"    , span[class "fa fa-plus"][]]
+                    [ button [class "btn btn-default", onClick (UpdateRuleForm {details | ui = { ui | editDirectives = True }})][text "Select directives", span[class "fa fa-plus"][]]
+                    , button [class "btn btn-default", onClick (UpdateRuleForm {details | ui = { ui | editGroups     = True }}    )][text "Select groups"    , span[class "fa fa-plus"][]]
                     ]
                   ]
                 ]
@@ -97,12 +99,12 @@ tabContent model details =
               [ div [class "form-group"]
                 [ label[for "rule-name"][text "Name"]
                 , div[]
-                  [ input[ id "rule-name", type_ "text", value rule.name, class "form-control", onInput (\s -> UpdateRule {rule | name = s} ) ][] ]
+                  [ input[ id "rule-name", type_ "text", value rule.name, class "form-control", onInput (\s -> UpdateRuleForm {details | rule = {rule | name = s}} ) ][] ]
                 ]
               , div [class "form-group"]
                 [ label[for "rule-category"][text "Category"]
                 , div[]
-                  [ select[ id "rule-category", class "form-control", onInput (\s -> UpdateRule {rule | categoryId = s} ) ]
+                  [ select[ id "rule-category", class "form-control", onInput (\s -> UpdateRuleForm {details | rule = {rule | categoryId = s}} ) ]
                     (buildListCategories  "" model.rulesTree)
                   ]
                 ]
@@ -110,10 +112,10 @@ tabContent model details =
                 [ label[for "rule-tags-key"][text "Tags"]
                 , div[class "form-group"]
                   [ div[class "input-group"]
-                    [ input[ id "rule-tags-key", type_ "text", placeholder "key", class "form-control", onInput (\s -> UpdateNewTag {newTag | key = s} ), value newTag.key][]
+                    [ input[ id "rule-tags-key", type_ "text", placeholder "key", class "form-control", onInput (\s -> UpdateRuleForm {details | ui = {ui | newTag = {newTag | key = s}}} ), value newTag.key][]
                     , span [ class "input-group-addon addon-json"][ text "=" ]
-                    , input[ type_ "text", placeholder "value", class "form-control", onInput (\s -> UpdateNewTag {newTag | value = s} ), value newTag.value][]
-                    , span [ class "input-group-btn"][ button [ class "btn btn-success", type_ "button", onClick  (UpdateRule {rule | tags = newTag :: rule.tags }) ][ span[class "fa fa-plus"][]] ]
+                    , input[ type_ "text", placeholder "value", class "form-control", onInput (\s -> UpdateRuleForm {details | ui = {ui | newTag = {newTag | value = s}}}), value newTag.value][]
+                    , span [ class "input-group-btn"][ button [ class "btn btn-success", type_ "button", onClick  (UpdateRuleForm {details | rule = {rule |  tags = newTag :: rule.tags }}) ][ span[class "fa fa-plus"][]] ]
                     ]
                   ]
                 , buildTagsContainer rule
@@ -121,12 +123,12 @@ tabContent model details =
               , div [class "form-group"]
                 [ label[for "rule-short-description"][text "Short description"]
                 , div[]
-                  [ input[ id "rule-short-description", type_ "text", value rule.shortDescription, placeholder "There is no short description", class "form-control", onInput (\s -> UpdateRule {rule | shortDescription = s} )  ][] ]
+                  [ input[ id "rule-short-description", type_ "text", value rule.shortDescription, placeholder "There is no short description", class "form-control", onInput (\s -> UpdateRuleForm {details | rule = {rule | shortDescription = s}} )  ][] ]
                 ]
               , div [class "form-group"]
                 [ label[for "rule-long-description"][text "Long description"]
                 , div[]
-                  [ textarea[ id "rule-long-description", value rule.longDescription, placeholder "There is no long description", class "form-control", onInput (\s -> UpdateRule {rule | longDescription = s} ) ][] ]
+                  [ textarea[ id "rule-long-description", value rule.longDescription, placeholder "There is no long description", class "form-control", onInput (\s -> UpdateRuleForm {details | rule = {rule | longDescription = s}} ) ][] ]
                 ]
               ]
               else
@@ -231,7 +233,7 @@ tabContent model details =
                   [ badgePolicyMode directive
                   , span [class "target-name"][text directive.displayName]
                   ]
-                , span [class "target-remove", onClick (UpdateRule {rule | directives = List.Extra.remove directive.id rule.directives})][ i [class "fa fa-times"][] ]
+                , span [class "target-remove", onClick (UpdateRuleForm {details | rule = {rule | directives = List.Extra.remove directive.id rule.directives}})][ i [class "fa fa-times"][] ]
                 , span [class "border"][]
                 ]
             in
@@ -243,7 +245,7 @@ tabContent model details =
             [ div [class "table-title"]
               [ h4 [][text "Compliance by Directives"]
               , ( if model.ui.hasWriteRights then
-                  button [class "btn btn-default btn-sm", onClick (EditDirectives True)][text "Edit"]
+                  button [class "btn btn-default btn-sm", onClick (UpdateRuleForm {details | ui = {ui | editDirectives = True }})][text "Edit"]
                 else
                   text ""
                 )
@@ -284,7 +286,7 @@ tabContent model details =
                     else
                       List.Extra.remove id rule.directives
                 in
-                  UpdateRule {rule | directives = newDirectives}
+                  UpdateRuleForm {details | rule = {rule | directives = newDirectives} }
 
               directiveTreeElem : Technique -> Html Msg
               directiveTreeElem item =
@@ -345,7 +347,7 @@ tabContent model details =
                   [ div[class "list-heading"]
                     [ h4[][text "Apply these directives"]
                     , div [class "btn-actions"]
-                      [ button[class "btn btn-sm btn-default", onClick (EditDirectives False)][text "Cancel"]
+                      [ button[class "btn btn-sm btn-default", onClick (UpdateRuleForm {details | ui = {ui | editDirectives = False}} )][text "Cancel"]
                       , button[class "btn btn-sm btn-success", onClick (CallApi (saveRuleDetails rule isNewRule))][text "Save"]
                       ]
                     ]
@@ -415,7 +417,7 @@ tabContent model details =
             [ div [class "table-title"]
               [ h4 [][text "Compliance by Nodes"]
               , ( if model.ui.hasWriteRights == True then
-                  button [class "btn btn-default btn-sm", onClick (EditGroups True)][text "Edit"]
+                  button [class "btn btn-default btn-sm", onClick (UpdateRuleForm {details | ui = {ui | editGroups = True}})][text "Edit"]
                 else
                   text ""
                 )
@@ -483,7 +485,7 @@ tabContent model details =
                   [ div[class "list-heading"]
                     [ h4[][text "Apply to Nodes in any of these Groups"]
                     , div [class "btn-actions"]
-                      [ button[class "btn btn-sm btn-default", onClick (EditGroups False)][text "Cancel"]
+                      [ button[class "btn btn-sm btn-default", onClick (UpdateRuleForm {details | ui = {ui | editGroups = False}})][text "Cancel"]
                       , button[class "btn btn-sm btn-success", onClick (CallApi (saveRuleDetails rule isNewRule))][text "Save"]
                       ]
                     ]

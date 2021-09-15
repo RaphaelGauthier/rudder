@@ -16,7 +16,7 @@ import ViewTabContent exposing (buildListCategories)
 -- This file contains all methods to display the details of the selected category.
 --
 
-editionTemplateCat : Model -> EditCategoryDetails  -> Html Msg
+editionTemplateCat : Model -> CategoryDetails  -> Html Msg
 editionTemplateCat model details =
   let
     originCat = details.originCategory
@@ -32,7 +32,7 @@ editionTemplateCat model details =
         [ div [class "form-group"]
           [ label[for "category-name"][text "Name"]
           , div[]
-            [ input[ id "category-name", type_ "text", value category.name, class "form-control" , onInput (\s -> UpdateCategory {category | name = s} ) ][] ]
+            [ input[ id "category-name", type_ "text", value category.name, class "form-control" , onInput (\s -> UpdateCategoryForm { details | category = { category | name = s}} ) ][] ]
           ]
         , div [class "form-group"]
           [ label[for "category-parent"][text "Parent"]
@@ -44,7 +44,7 @@ editionTemplateCat model details =
         , div [class "form-group"]
           [ label[for "category-description"][text "Description"]
           , div[]
-            [ textarea[ id "category-description", value category.description, placeholder "There is no description", class "form-control" , onInput (\s -> UpdateCategory {category | description = s} ) ][] ]
+            [ textarea[ id "category-description", value category.description, placeholder "There is no description", class "form-control" , onInput (\s -> UpdateCategoryForm { details | category = { category | description = s}} ) ][] ]
           ]
         ]
       else
