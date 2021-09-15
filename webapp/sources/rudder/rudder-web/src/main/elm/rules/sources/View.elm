@@ -38,23 +38,14 @@ view model =
     ruleTreeCategory : (Category Rule) -> Html Msg
     ruleTreeCategory item =
       let
-        buildHtmlSortedTree : ItemTree -> List (Html Msg)
-        buildHtmlSortedTree itm =
-          case itm of
-            CategoryItem c -> List.map ruleTreeCategory (getSubElems c)
-            RuleItem     r -> [ruleTreeElem r]
+        categories = getSubElems item
+                       |> List.sortBy .name
+                       |> List.map ruleTreeCategory
+        rules = item.elems
+                |> List.sortBy .name
+                |> List.map ruleTreeElem
 
-        treeItems : List ItemTree
-        treeItems = List.map RuleItem item.elems ++ List.map CategoryItem (getSubElems item)
-
-        sortTree i =
-          case i of
-            CategoryItem cat -> cat.name
-            RuleItem rule    -> rule.name
-
-        sortedTree = List.sortBy sortTree treeItems
-
-        childsList  = ul[class "jstree-children"](List.concatMap buildHtmlSortedTree sortedTree)
+        childsList  = ul[class "jstree-children"] (List.concat [ categories, rules] )
 
       in
         li[class "jstree-node jstree-open"]

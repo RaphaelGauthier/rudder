@@ -162,10 +162,6 @@ type SortBy
   | Status
   | Compliance
 
-type ItemTree
-  = CategoryItem (Category Rule)
-  | RuleItem Rule
-
 type alias RuleFilters =
   { sortBy         : SortBy
   , sortOrder      : Bool
