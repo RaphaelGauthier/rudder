@@ -89,16 +89,20 @@ view model =
           ]
 
       EditRule details ->
-        (editionTemplate model details False)
-
-      CreateRule details ->
-        (editionTemplate model details True)
+        let
+          isCreation = case details.originRule of
+            Nothing -> True
+            Just r  -> False
+        in
+          (editionTemplate model details isCreation)
 
       EditCategory details ->
-        (editionTemplateCat model details False)
-
-      CreateCategory details ->
-        (editionTemplateCat model details True)
+        let
+          isCreation = case details.originCategory of
+            Nothing -> True
+            Just r  -> False
+        in
+          (editionTemplateCat model details isCreation)
 
     modal = case model.ui.modal of
       NoModal -> text ""

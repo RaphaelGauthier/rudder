@@ -144,17 +144,15 @@ type alias ComplianceDetails =
   , badPolicyMode              : Maybe Float
   }
 
-type alias EditRuleDetails = { originRule : Rule, rule : Rule, tab :  TabMenu, editDirectives: Bool, editGroups : Bool, newTag : Tag }
+type alias EditRuleDetails = { originRule : Maybe Rule, rule : Rule, tab :  TabMenu, editDirectives: Bool, editGroups : Bool, newTag : Tag }
 
-type alias EditCategoryDetails = { originCategory : Category Rule, category : Category Rule, tab :  TabMenu}
+type alias EditCategoryDetails = { originCategory : Maybe (Category Rule), category : Category Rule, tab :  TabMenu}
 
 type Mode
   = Loading
   | RuleTable
-  | EditRule   EditRuleDetails
-  | CreateRule EditRuleDetails
-  | EditCategory   EditCategoryDetails
-  | CreateCategory EditCategoryDetails
+  | EditRule     EditRuleDetails
+  | EditCategory EditCategoryDetails
 
 type SortBy
   = Name

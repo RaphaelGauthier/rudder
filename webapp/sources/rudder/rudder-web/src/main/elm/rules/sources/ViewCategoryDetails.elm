@@ -18,12 +18,15 @@ import ViewTabContent exposing (buildListCategories)
 editionTemplateCat : Model -> EditCategoryDetails -> Bool -> Html Msg
 editionTemplateCat model details isNewCat =
   let
-    originCat = details.originCategory
+    originCategoryName = case details.originCategory of
+      Just c  -> c.name
+      Nothing -> ""
     category  = details.category
-    categoryTitle = if (String.isEmpty originCat.name && isNewCat) then
+
+    categoryTitle = if isNewCat then
         span[style "opacity" "0.4"][text "New category"]
       else
-         text originCat.name
+         text originCategoryName
 
     categoryForm =
       if model.ui.hasWriteRights == True then

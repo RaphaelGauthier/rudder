@@ -19,13 +19,16 @@ import ViewTabContent exposing (tabContent)
 editionTemplate : Model -> EditRuleDetails -> Bool -> Html Msg
 editionTemplate model details isNewRule =
   let
-    originRule = details.originRule
+    (originRuleName, originRuleDescription, originRuleEnabled) = case details.originRule of
+      Just oR -> (oR.name, oR.shortDescription, oR.enabled)
+      Nothing -> ("", "There is no short description", True)
+
     rule = details.rule
-    ruleTitle = if (String.isEmpty originRule.name && isNewRule) then
+    ruleTitle = if (String.isEmpty originRuleName && isNewRule) then
         span[style "opacity" "0.4"][text "New rule"]
       else
-         text originRule.name
-    (classDisabled, badgeDisabled) = if originRule.enabled /= True then
+         text originRuleName
+    (classDisabled, badgeDisabled) = if originRuleEnabled /= True then
         ("item-disabled", span[ class "badge-disabled"][])
       else
         ("", text "")
@@ -35,9 +38,12 @@ editionTemplate model details isNewRule =
           EditRule _ -> ""
           _ -> " disabled"
         txtDisabled = if rule.enabled == True then "Disable" else "Enable"
+        onClickAction = case details.originRule of
+          Just oR -> [onClick (GenerateId (\r -> CloneRule oR (RuleId r)))]
+          Nothing -> []
       in
         [ li [] [
-            a [ class ("action-success"++disableWhileCreating), onClick (GenerateId (\r -> CloneRule originRule (RuleId r)))] [
+            a ([ class ("action-success"++disableWhileCreating)] ++ onClickAction) [
               i [ class "fa fa-clone"] []
             , text "Clone"
             ]
@@ -85,10 +91,15 @@ editionTemplate model details isNewRule =
           in
             (diff, lengthDiff + diff)
 
-    (diffDirectivesPos, diffDirectivesNeg) = getDiffList originRule.directives rule.directives
-    nbInclude = case originRule.targets of
-      [Composition (Or i) (Or e)] -> List.length i
-      targets -> List.length targets
+    (diffDirectivesPos, diffDirectivesNeg) = case details.originRule of
+      Just oR -> getDiffList oR.directives rule.directives
+      Nothing -> (0, 0)
+    nbInclude = case details.originRule of
+      Just oR ->
+        case oR.targets of
+          [Composition (Or i) (Or e)] -> List.length i
+          targets -> List.length targets
+      Nothing -> 0
   in
     div [class "main-container"]
     [ div [class "main-header "]
@@ -116,7 +127,7 @@ editionTemplate model details isNewRule =
           )
         ]
       , div [class "header-description"]
-        [ p[][text originRule.shortDescription] ]
+        [ p[][text originRuleDescription] ]
       ]
     , div [class "main-navbar" ]
       [ ul[class "ui-tabs-nav "]
