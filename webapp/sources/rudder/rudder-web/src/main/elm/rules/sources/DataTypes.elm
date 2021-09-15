@@ -187,8 +187,7 @@ type alias Model =
   }
 
 type Msg
-  = ChangeTabFocus TabMenu
-  | GenerateId (String -> Msg)
+  = GenerateId (String -> Msg)
   | OpenRuleDetails RuleId
   | OpenCategoryDetails (Category Rule)
   | CloseDetails

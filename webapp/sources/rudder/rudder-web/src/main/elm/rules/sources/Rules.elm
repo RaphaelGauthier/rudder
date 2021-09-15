@@ -81,12 +81,6 @@ update msg model =
         Err err ->
           processApiError "Getting Directives tree" err model
 
-    ChangeTabFocus newTab ->
-      case model.mode of
-        RuleForm details ->
-          ({model | mode = RuleForm   {details | tab = newTab}}, Cmd.none)
-        _   -> (model, Cmd.none)
-
     GetRuleDetailsResult res ->
       case res of
         Ok r ->
