@@ -6,6 +6,7 @@ import Html.Attributes exposing (id, class, type_, placeholder, value, for, href
 import Html.Events exposing (onClick, onInput)
 import List.Extra
 import List
+import Maybe.Extra
 import String exposing ( fromFloat)
 import NaturalOrdering exposing (compareOn)
 import ApiCalls exposing (..)
@@ -15,18 +16,15 @@ import ViewTabContent exposing (buildListCategories)
 -- This file contains all methods to display the details of the selected category.
 --
 
-editionTemplateCat : Model -> EditCategoryDetails -> Bool -> Html Msg
-editionTemplateCat model details isNewCat =
+editionTemplateCat : Model -> EditCategoryDetails  -> Html Msg
+editionTemplateCat model details =
   let
-    originCategoryName = case details.originCategory of
-      Just c  -> c.name
-      Nothing -> ""
+    originCat = details.originCategory
     category  = details.category
-
-    categoryTitle = if isNewCat then
-        span[style "opacity" "0.4"][text "New category"]
-      else
-         text originCategoryName
+    categoryTitle =
+      case originCat of
+       Nothing -> span[style "opacity" "0.4"][text "New category"]
+       Just cat -> text cat.name
 
     categoryForm =
       if model.ui.hasWriteRights == True then
@@ -82,7 +80,7 @@ editionTemplateCat model details isNewCat =
                 [ button [ class "btn btn-danger" , onClick (OpenDeletionPopupCat category)]
                   [ text "Delete", i [ class "fa fa-times-circle"][]]
                 ]
-              , button [class "btn btn-success", type_ "button", onClick (CallApi (saveCategoryDetails category isNewCat))]
+              , button [class "btn btn-success", type_ "button", onClick (CallApi (saveCategoryDetails category (Maybe.Extra.isNothing details.originCategory)))]
                 [ text "Save", i [ class "fa fa-download"][]]
               ]
             else

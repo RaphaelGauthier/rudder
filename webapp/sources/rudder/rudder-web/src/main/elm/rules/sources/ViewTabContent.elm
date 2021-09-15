@@ -6,6 +6,7 @@ import Html.Attributes exposing (id, class, type_, placeholder, value, for, href
 import Html.Events exposing (onClick, onInput)
 import List.Extra
 import List
+import Maybe.Extra
 import String exposing ( fromFloat)
 import NaturalOrdering exposing (compareOn)
 import ApiCalls exposing (..)
@@ -43,9 +44,10 @@ buildTagsContainer rule =
   in
     div [class "tags-container form-group"](tagsList)
 
-tabContent: Model -> EditRuleDetails -> Bool -> Html Msg
-tabContent model details isNewRule =
+tabContent: Model -> EditRuleDetails  -> Html Msg
+tabContent model details =
   let
+      isNewRule = Maybe.Extra.isNothing details.originRule
       badgePolicyMode : Directive -> Html Msg
       badgePolicyMode d =
         let
@@ -54,13 +56,12 @@ tabContent model details isNewRule =
           span [class ("rudder-label label-sm label-" ++ policyMode)][]
 
       rule       = details.rule
-      originRule = details.originRule
-      newTag     = details.newTag
+      newTag     = details.ui.newTag
   in
     case details.tab of
       Information   ->
         let
-          rightCol = if isNewRule == True then
+          rightCol = if isNewRule then
               div [class "col-xs-12 col-sm-6 col-lg-5"]
               [ div [class "callout-fade callout-info"]
                 [ div [class "marker"][span [class "glyphicon glyphicon-info-sign"][]]
@@ -237,7 +238,7 @@ tabContent model details isNewRule =
                 List.map rowDirective directives
         in
 
-          if details.editDirectives == False then
+          if not details.ui.editDirectives then
             div[class "tab-table-content"]
             [ div [class "table-title"]
               [ h4 [][text "Compliance by Directives"]
@@ -409,7 +410,7 @@ tabContent model details isNewRule =
               rowIncludeGroup
         in
 
-          if details.editGroups == False then
+          if not details.ui.editGroups then
             div[class "tab-table-content"]
             [ div [class "table-title"]
               [ h4 [][text "Compliance by Nodes"]
