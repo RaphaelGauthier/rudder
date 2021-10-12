@@ -233,3 +233,15 @@ decodeTargets =
     string
 
   ]
+
+decodeGetNodesList : Decoder (List NodeInfo)
+decodeGetNodesList =
+  D.at ["data", "nodes" ] (D.list decodeNodeInfo)
+
+decodeNodeInfo : Decoder NodeInfo
+decodeNodeInfo =
+  succeed NodeInfo
+    |> required "id"          D.string
+    |> required "hostname"    D.string
+    |> required "description" D.string
+    |> required "policyMode"  D.string

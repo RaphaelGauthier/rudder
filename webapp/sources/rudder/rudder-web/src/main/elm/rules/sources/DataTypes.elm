@@ -56,6 +56,13 @@ type alias Technique =
   , directives : List Directive
   }
 
+type alias NodeInfo =
+  { id          : String
+  , hostname    : String
+  , description : String
+  , policyMode  : String
+  }
+
 type alias Category a =
   { id          : String
   , name        : String
@@ -199,6 +206,7 @@ type alias Model =
   , techniquesTree  : Category Technique
   , rulesCompliance : List RuleCompliance
   , directives      : List Directive
+  , nodes           : List NodeInfo
   , ui              : UI
   }
 
@@ -223,6 +231,7 @@ type Msg
   | GetRulesResult           (Result Error (Category Rule))
   | GetGroupsTreeResult      (Result Error (Category Group))
   | GetTechniquesTreeResult  (Result Error ((Category Technique, List Technique)))
+  | GetNodesList             (Result Error (List NodeInfo))
   | DeleteRule               (Result Error (RuleId, String))
   | DeleteCategory           (Result Error (String, String))
   | DisableRule
