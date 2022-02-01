@@ -4,10 +4,8 @@
   <head>
     <title>Rudder - Global parameters</title>
     <style>
-    .template-sidebar.sidebar-left{
-      box-shadow : none !important;
-      flex-basis : initial !important;
-      flex: initial !important;
+    .rudder-template .one-col{
+      width: 100%;
     }
     .template-main{
       flex-basis : initial !important;
@@ -17,23 +15,14 @@
       margin-top: 10px;
       min-height: 80px;
     }
-    .btn.space-bottom{
-      margin-bottom:15px;
-    }
-    .btn.space-top{
-      margin-top:10px;
-    }
-    #actions_zone {
-      margin: 0;
-    }
-    #globalParametersGrid{
+    #.dataTable{
       table-layout:fixed;
     }
-    #globalParametersGrid .json-beautify{
+    .dataTable .json-beautify{
       padding:0;
       max-height: initial;
     }
-    #globalParametersGrid .json-beautify:after{
+    .dataTable .json-beautify:after{
       content:"";
     }
     </style>
@@ -74,18 +63,23 @@
                     </p>
                   </div>
                 </div>
+
+                <div id="parameters-app" ></div>
+
+                <!--
                 <div class="inner-portlet-content">
                   <div class="lift:configuration.ParameterManagement.display"></div>
                 </div>
-              </lift:authz>
-              <lift:authz role="directive_write">
-                <div id="globalParameterForm"></div>
+                -->
+
               </lift:authz>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!--
     <div id="createGlobalParameterPopup" class="modal fade" data-keyboard="true" tabindex="-1">
       <lift:ignore>
         This div gets the content of the CreateOrUpdateGlobalParameterPopup injected within
@@ -93,6 +87,50 @@
       <div id="createGlobalParameterContainer"></div>
     </div>
     <div id="deletionPopup" class="nodisplay"></div>
+    -->
+
   </div>
+
+  <script data-lift="with-cached-resource" src="/javascript/rudder/elm/rudder-parameters.js"></script>
+  <script>
+    var hasWriteRights = false;
+  </script>
+  <lift:authz role="directive_write">
+    <script>
+      var hasWriteRights = true;
+    </script>
+  </lift:authz>
+
+  <script>
+    $(document).ready(function(){
+      var main = document.getElementById("parameters-app")
+      var initValues = {
+        contextPath    : contextPath
+      , hasWriteRights : hasWriteRights
+      };
+
+      var app = Elm.Parameters.init({node: main, flags: initValues});
+
+      app.ports.successNotification.subscribe(function(str) {
+        createSuccessNotification(str)
+      });
+
+      app.ports.errorNotification.subscribe(function(str) {
+        createErrorNotification(str)
+      });
+
+      app.ports.copy.subscribe(function(str) {
+        navigator.clipboard.writeText(str);
+      });
+
+      // Initialize tooltips
+      app.ports.initTooltips.subscribe(function(msg) {
+        setTimeout(function(){
+          $('.bs-tooltip').bsTooltip();
+        }, 200);
+      });
+
+    });
+  </script>
 
 </lift:surround>
