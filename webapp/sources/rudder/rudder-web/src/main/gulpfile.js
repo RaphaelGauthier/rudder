@@ -26,8 +26,12 @@ const paths = {
             'node_modules/*/*.min.js*',
             'node_modules/datatables.net-plugins/sorting/natural.js',
             'node_modules/showdown-xss-filter/showdown-xss-filter.js',
+            'node_modules/JSON2/json2.js',
         ],
         'dest': 'webapp/javascript/libs',
+    },
+    'mutation_observer': {
+        'src' : 'node_modules/mutation-observer/index.js',
     },
     'vendor_css': {
         'src': [
@@ -101,7 +105,12 @@ function vendor_js(cb) {
         .pipe(dest(paths.vendor_js.dest));
     cb();
 };
-
+function mutation_observer(cb) {
+    src(paths.mutation_observer.src)
+        .pipe(rename('MutationObserver.js'))
+        .pipe(dest(paths.vendor_js.dest));
+    cb();
+};
 function css(cb) {
     src(paths.css.src)
         .pipe(dest(paths.css.dest));
@@ -126,4 +135,4 @@ exports.watch = series(clean, function() {
     watch(paths.vendor_js.src, { ignoreInitial: false }, vendor_js);
     watch(paths.vendor_css.src, { ignoreInitial: false }, vendor_css);
 });
-exports.default = series(clean, parallel(elm, css, js, vendor_css, vendor_js));
+exports.default = series(clean, parallel(elm, css, js, vendor_css, vendor_js, mutation_observer));
