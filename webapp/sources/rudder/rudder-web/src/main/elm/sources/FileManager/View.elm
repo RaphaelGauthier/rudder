@@ -126,7 +126,16 @@ filesTree model =
           )
   in
     div [class "fm-filetree"]
-    [ listFolders "/" ]
+    [ ul[]
+      [ li[]
+        [ a [ onClick <| EnvMsg <| GetLsTree ["/"] ]
+          [ folderIcon 20
+          , text "/"
+          ]
+        , listFolders "/"
+        ]
+      ]
+    ]
 
 currentDir : List String -> String
 currentDir dirList = case List.Extra.last dirList of
