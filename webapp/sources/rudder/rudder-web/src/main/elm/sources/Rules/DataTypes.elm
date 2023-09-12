@@ -56,7 +56,7 @@ type alias Directive =
   , system           : Bool
   , policyMode       : String
   , tags             : List Tag
- }
+  }
 
 type alias Technique =
   { name       : String
@@ -165,7 +165,6 @@ type alias BlockCompliance value =
     , components        : List (ComponentCompliance value)
     }
 
-
 type alias ComponentValueCompliance value =
   { component         : String
   , compliance        : Float
@@ -253,6 +252,10 @@ type alias TableFilters =
   , sortOrder : SortOrder
   , filter    : String
   , unfolded  : List String
+  , hideAllCompliant         : Bool
+  , openComplianceFilters    : Bool
+  , selectedComplianceStatus : List String
+  , showOrHideStatus         : Bool
   }
 
 type alias TreeFilters =

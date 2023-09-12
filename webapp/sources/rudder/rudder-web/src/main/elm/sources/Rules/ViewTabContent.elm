@@ -390,7 +390,8 @@ directivesTab model details =
       , div [class "table-header"]
         [ input [type_ "text", placeholder "Filter", class "input-sm form-control", value model.ui.directiveFilters.tableFilters.filter
         , onInput (\s -> UpdateDirectiveFilters {directiveFilters | tableFilters = {tableFilters | filter = s}} )][]
-        , button [class "btn btn-default", onCustomClick (RefreshComplianceTable rule.id)][i [class "fa fa-refresh"][]]
+        , button [class "btn btn-default btn-sm", onCustomClick (RefreshComplianceTable rule.id)][i [class "fa fa-refresh"][]]
+        ,
         ]
       , div[class "table-container"] [(
         let
@@ -439,20 +440,19 @@ directivesTab model details =
               else
                 sortedDirectives
                 |> List.map (\d ->
-                     tr []
-                     [ td[]
-                       [
-                         a []
-                         [ badgePolicyMode model.policyMode d.policyMode
-                         , span [class "item-name tooltipable"][text d.displayName]
-                         , buildTagsTree d.tags
-                         , div [class "treeActions-container"]
-                           [ span [class "treeActions"][ span [class "tooltipable fa action-icon accept"][]]
-                           ]
-                         , goToBtn (getDirectiveLink model.contextPath  d.id)
-                         ]
-                       ]
-                     ])
+                  tr []
+                  [ td[]
+                    [ a []
+                      [ badgePolicyMode model.policyMode d.policyMode
+                      , span [class "item-name tooltipable"][text d.displayName]
+                      , buildTagsTree d.tags
+                      , div [class "treeActions-container"]
+                        [ span [class "treeActions"][ span [class "tooltipable fa action-icon accept"][]]
+                        ]
+                      , goToBtn (getDirectiveLink model.contextPath  d.id)
+                      ]
+                    ]
+                  ])
               )
             ]
         )]
