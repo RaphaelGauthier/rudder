@@ -130,6 +130,16 @@ class SrvGrid(
 
     val nodeIds = nodes.map(nodes => JsArray(nodes.map(n => Str(n.id.value)).toList).toJsCmd).getOrElse("undefined")
     JsRaw(s"""nodeIds = ${nodeIds};
+             |var main = document.getElementById("nodes-app")
+             |var initValues = {
+             |    contextPath    : "${S.contextPath}"
+             |  , hasReadRights  : hasReadRights
+             |  , policyMode     : "${globalPolicyMode.mode.name}"
+             |};
+             |var app = Elm.Nodes.init({node: main, flags: initValues});
+             |app.ports.errorNotification.subscribe(function(msg) {
+             |  createErrorNotification(msg);
+             |});
              | createNodeTable("${tableId}",function() {reloadTable("${tableId}")} );
                    """.stripMargin)
   }
