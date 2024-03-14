@@ -32,15 +32,19 @@ view model =
     , label [for "displayDeprecation"][text "Display deprecated technique versions"]
     ]
   , ( if model.ui.hasWriteRights then
-    let
-      createAction = case last model.techniques of
-        Just t  -> (Create t.version)
-        Nothing -> (Ignore "Unknown technique version")
-    in
-      div [class "space-top"]
-      [ button [type_ "button", id "addButton", class "btn btn-success new-icon", onClick createAction ] -- ng-click "techniques[techniques.length-1].action()"
-        [ text "Create with latest version"]
-      ]
+    case model.techniques of
+      Just techniques ->
+        let
+          createAction = case last techniques of
+            Just t  -> (Create t.version)
+            Nothing -> (Ignore "Unknown technique version")
+        in
+          div [class "space-top"]
+          [ button [type_ "button", id "addButton", class "btn btn-success new-icon", onClick createAction ] -- ng-click "techniques[techniques.length-1].action()"
+            [ text "Create with latest version"]
+          ]
+      Nothing -> text ""
+
     else
     text ""
     )

@@ -11,7 +11,6 @@ import TechniqueVersion.DataTypes exposing (..)
 displayTechniqueRow : Model -> List (Html Msg)
 displayTechniqueRow model =
   let
-    techniques = model.techniques
     row : Technique -> Html Msg
     row technique =
       if technique.isDeprecated && not model.ui.displayDeprecated then
@@ -78,7 +77,10 @@ displayTechniqueRow model =
         text ""
       ]
   in
-    techniques |> List.map row
+    case model.techniques of
+      Just techniques ->
+        techniques |> List.map row
+      Nothing -> [tr[][ td[colspan 5][ text "Cound not fetch technique versions list"] ]]
 
 -- WARNING:
 --

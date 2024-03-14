@@ -1,5 +1,6 @@
 module TechniqueVersion.DataTypes exposing (..)
 
+import Json.Decode as D exposing (..)
 --
 -- All our data types
 --
@@ -23,7 +24,7 @@ type alias UI =
 type alias Model =
   { contextPath    : String
   , ui             : UI
-  , techniques     : List Technique
+  , techniques     : Maybe (List Technique)
   }
 
 type Msg
@@ -31,3 +32,4 @@ type Msg
   | CallApi (Model -> Cmd Msg)
   | Create String
   | ToggleDeprecated Bool
+  | GetTechniquesList (Result D.Error (List Technique))

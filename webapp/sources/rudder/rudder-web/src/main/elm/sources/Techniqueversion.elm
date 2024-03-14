@@ -46,3 +46,13 @@ update msg model =
         newModel = { model | ui = { ui | displayDeprecated = check } }
       in
         (newModel, initTooltips "")
+
+    GetTechniquesList res ->
+       case res of
+         Ok techniques ->
+           let
+             newModel = { model | techniques = Just techniques }
+           in
+             (newModel, Cmd.none)
+         Err err ->
+           (model, errorNotification "Could not fetch technique versions list")
