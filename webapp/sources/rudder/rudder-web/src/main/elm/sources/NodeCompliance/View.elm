@@ -9,10 +9,9 @@ import Tuple3
 import Dict
 import List.Extra
 
-import NodeCompliance.ApiCalls exposing (..)
 import NodeCompliance.DataTypes exposing (..)
 import NodeCompliance.ViewUtils exposing (..)
-import Compliance.Utils exposing (displayComplianceFilters, filterDetailsByCompliance)
+import Compliance.Utils exposing (displayComplianceFilters, filterDetailsByCompliance, complianceFilterBtn)
 
 
 view : Model -> Html Msg
@@ -52,10 +51,7 @@ view model =
           [ div [class "table-header extra-filters"]
             [ div[class "main-filters"]
               [ input [type_ "text", placeholder "Filter", class "input-sm form-control", value filters.filter, onInput (\s -> (UpdateFilters {filters | filter = s} ))][]
-              , button [class "btn btn-default btn-sm btn-icon", onClick (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters}), style "min-width" "170px"]
-                [ text ((if complianceFilters.showComplianceFilters then "Hide " else "Show ") ++ "compliance filters")
-                , i [class ("fa " ++ (if complianceFilters.showComplianceFilters then "fa-minus" else "fa-plus"))][]
-                ]
+              , complianceFilterBtn complianceFilters (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters})
               , button [class "btn btn-default btn-sm btn-refresh", onClick Refresh ]
                 [ i [ class "fa fa-refresh" ] [] ]
               ]

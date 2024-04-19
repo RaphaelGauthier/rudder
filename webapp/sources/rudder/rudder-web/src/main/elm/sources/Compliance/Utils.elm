@@ -376,6 +376,36 @@ filterReportsByCompliance filter = \i ->
     |> List.any (filterReports filter)
   )
 
+complianceFilterBtn : ComplianceFilters -> msg -> Html msg
+complianceFilterBtn complianceFilters action =
+  let
+    activeIcon = if not (List.isEmpty complianceFilters.selectedStatus) then i[class "fa fa-exclamation-circle icon-active"][] else text ""
+    btnContent =
+      [ activeIcon
+      , text ((if complianceFilters.showComplianceFilters then "Hide " else "Show ") ++ "compliance filters")
+      , i [class ("fa " ++ (if complianceFilters.showComplianceFilters then "fa-minus" else "fa-plus"))][]
+      ]
+    txt =
+      ( if List.isEmpty complianceFilters.selectedStatus then -- No active filter
+        span[]
+        [ text "No active compliance filter"
+        ]
+      else
+        span[]
+        [ text (if complianceFilters.showOnlyStatus then "Show only " else "Hide ")
+        , span[class "badge"][text (String.fromInt (List.length complianceFilters.selectedStatus))]
+        , text " status"
+        ]
+      )
+  in
+    div[]
+    [ txt
+    , button [class "btn btn-default btn-sm btn-icon", onClick action]
+      [ i [class ("fa " ++ (if complianceFilters.showComplianceFilters then "fa-minus" else "fa-plus"))][]
+      ]
+    ]
+
+
 
 displayComplianceFilters : ComplianceFilters -> (ComplianceFilters -> msg) -> Html msg
 displayComplianceFilters complianceFilters updateAction =

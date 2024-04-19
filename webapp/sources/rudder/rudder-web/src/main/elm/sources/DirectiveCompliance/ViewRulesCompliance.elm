@@ -12,7 +12,7 @@ import Dict
 import DirectiveCompliance.ApiCalls exposing (..)
 import DirectiveCompliance.DataTypes exposing (..)
 import DirectiveCompliance.ViewUtils exposing (..)
-import Compliance.Utils exposing (displayComplianceFilters, filterDetailsByCompliance)
+import Compliance.Utils exposing (displayComplianceFilters, filterDetailsByCompliance, complianceFilterBtn)
 
 displayRulesComplianceTable : Model -> Html Msg
 displayRulesComplianceTable model =
@@ -39,6 +39,7 @@ displayRulesComplianceTable model =
     sort =   case List.Extra.find (Tuple3.first >> (==) sortId) fun.rows of
       Just (_,_,sortFun) -> (\i1 i2 -> sortFun (fun.data model i1) (fun.data model i2))
       Nothing -> (\_ _ -> EQ)
+
   in
     ( if model.ui.loading then
       generateLoadingTable
@@ -47,10 +48,7 @@ displayRulesComplianceTable model =
       [ div[class "main-filters"]
         [ input [type_ "text", placeholder "Filter", class "input-sm form-control", value filters.filter
           , onInput (\s -> (UpdateFilters {filters | filter = s} ))][]
-        , button [class "btn btn-default btn-sm btn-icon", onClick (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters}), style "min-width" "170px"]
-          [ text ((if complianceFilters.showComplianceFilters then "Hide " else "Show ") ++ "compliance filters")
-          , i [class ("fa " ++ (if complianceFilters.showComplianceFilters then "fa-minus" else "fa-plus"))][]
-          ]
+        , complianceFilterBtn complianceFilters (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters})
         , button [class "btn btn-sm btn-primary btn-export", onClick (CallApi getCSVExport) ]
           [ text "Export " , i [ class "fa fa-download" ] [] ]
         ]

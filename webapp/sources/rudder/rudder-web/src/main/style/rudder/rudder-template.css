@@ -177,6 +177,12 @@
 .rudder-template .btn.btn-save .fa:last-child{
   margin-left: 6px;
 }
+.rudder-template .btn.btn-icon .fa:first-child:not(:last-child) {
+  margin-right: 4px;
+}
+.rudder-template .btn.btn-icon .icon-active{
+  color: #13BEB7;
+}
 .rudder-template .header-buttons .tooltip{
   margin-right: 15px;
 }

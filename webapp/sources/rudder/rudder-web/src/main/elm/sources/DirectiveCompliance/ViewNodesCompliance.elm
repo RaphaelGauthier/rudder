@@ -5,14 +5,12 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import List
 import List.Extra
-import String
 import Tuple3
 import Dict
 
-import DirectiveCompliance.ApiCalls exposing (..)
 import DirectiveCompliance.DataTypes exposing (..)
 import DirectiveCompliance.ViewUtils exposing (..)
-import Compliance.Utils exposing (displayComplianceFilters, filterDetailsByCompliance)
+import Compliance.Utils exposing (displayComplianceFilters, filterDetailsByCompliance, complianceFilterBtn)
 
 
 displayNodesComplianceTable : Model -> Html Msg
@@ -48,10 +46,7 @@ displayNodesComplianceTable model =
       [ div [class "table-header extra-filters"]
         [ div[class "main-filters"]
           [ input [type_ "text", placeholder "Filter", class "input-sm form-control", value filters.filter, onInput (\s -> (UpdateFilters {filters | filter = s} ))][]
-          , button [class "btn btn-default btn-sm btn-icon", onClick (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters}), style "min-width" "170px"]
-            [ text ((if complianceFilters.showComplianceFilters then "Hide " else "Show ") ++ "compliance filters")
-            , i [class ("fa " ++ (if complianceFilters.showComplianceFilters then "fa-minus" else "fa-plus"))][]
-            ]
+          , complianceFilterBtn complianceFilters (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters})
           ]
         , displayComplianceFilters complianceFilters UpdateComplianceFilters
         ]

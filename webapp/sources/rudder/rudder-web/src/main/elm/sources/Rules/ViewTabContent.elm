@@ -18,7 +18,7 @@ import Rules.ViewRepairedReports
 import Rules.ViewUtils exposing (..)
 import Rules.ChangeRequest exposing (toLabel)
 import Compliance.DataTypes exposing (..)
-import Compliance.Utils exposing (displayComplianceFilters, filterDetailsByCompliance, buildComplianceBar)
+import Compliance.Utils exposing (displayComplianceFilters, filterDetailsByCompliance, buildComplianceBar, complianceFilterBtn)
 
 
 --
@@ -445,10 +445,7 @@ directivesTab model details =
         [ div [class "main-filters"]
           [ input [type_ "text", placeholder "Filter", class "input-sm form-control", value model.ui.directiveFilters.tableFilters.filter
           , onInput (\s -> UpdateDirectiveFilters {directiveFilters | tableFilters = {tableFilters | filter = s}} )][]
-          , button [class "btn btn-default btn-sm btn-icon", onClick (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters}), style "min-width" "170px"]
-            [ text ((if complianceFilters.showComplianceFilters then "Hide " else "Show ") ++ "compliance filters")
-            , i [class ("fa " ++ (if complianceFilters.showComplianceFilters then "fa-minus" else "fa-plus"))][]
-            ]
+          , complianceFilterBtn complianceFilters (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters})
           , button [class "btn btn-default btn-sm btn-refresh", onCustomClick (RefreshComplianceTable rule.id)][i [class "fa fa-refresh"][]]
           ]
         , displayComplianceFilters complianceFilters UpdateComplianceFilters
@@ -721,7 +718,6 @@ nodesTab model details =
           ( List.map (\t -> li[][b[][text t.name, text ": "], text t.description]) specialTargets )
         , text "The nodes of these targets ", strong[][text "are not displayed "], text "in the following table."
         ]
-
   in
     div[class "tab-table-content"]
       [ div [class "table-title"]
@@ -748,12 +744,8 @@ nodesTab model details =
         ]
       , div [class "table-header extra-filters"]
         [ div [class "main-filters"]
-          [ input [type_ "text", placeholder "Filter", class "input-sm form-control", value tableFilters.filter
-            , onInput (\s -> UpdateGroupFilters {groupFilters | tableFilters = {tableFilters | filter = s}} )][]
-          , button [class "btn btn-default btn-sm btn-icon", onClick (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters}), style "min-width" "170px"]
-            [ text ((if complianceFilters.showComplianceFilters then "Hide " else "Show ") ++ "compliance filters")
-            , i [class ("fa " ++ (if complianceFilters.showComplianceFilters then "fa-minus" else "fa-plus"))][]
-            ]
+          [ input [type_ "text", placeholder "Filter", class "input-sm form-control", value tableFilters.filter, onInput (\s -> UpdateGroupFilters {groupFilters | tableFilters = {tableFilters | filter = s}} )][]
+          , complianceFilterBtn complianceFilters (UpdateComplianceFilters {complianceFilters | showComplianceFilters = not complianceFilters.showComplianceFilters})
           , button [class "btn btn-default btn-sm btn-refresh", onCustomClick (RefreshComplianceTable details.rule.id)][i [class "fa fa-refresh"][]]
           ]
         , displayComplianceFilters complianceFilters UpdateComplianceFilters
