@@ -154,10 +154,15 @@ type alias UsersConf =
     , users : List User
     }
 
-type PanelMode
+type MenuMode
   = AddMode
-  | EditMode User
+  | EditMode User EditTab
   | Closed
+
+type EditTab
+  = RightsTab
+  | PasswordTab
+  | InformationTab
 
 type StateInput
     = InvalidUsername
@@ -210,7 +215,7 @@ type alias TableFilters =
 
 
 type alias UI = 
-    { panelMode : PanelMode
+    { menuMode : MenuMode
     , openDeleteModal : Bool
     , tableFilters : TableFilters
     }
@@ -227,9 +232,9 @@ type Msg
     | UpdateUserInfo (Result Error UserInfoForm)
     | UpdateUserStatus (Result Error Username)
     | CallApi (Model -> Cmd Msg)
-    | ActivePanelSettings User
-    | ActivePanelAddUser
-    | DeactivatePanel
+    | OpenEditMenu User
+    | OpenAddMenu
+    | CloseMenu
     | Password String
     | Login String
     | AddRole String

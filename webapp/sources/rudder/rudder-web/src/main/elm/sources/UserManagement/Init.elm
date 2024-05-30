@@ -15,7 +15,7 @@ init flags =
     let
         initUi = UI Closed False (TableFilters UserLogin Asc "")
         initUserInfoForm = UserInfoForm "" "" Dict.empty
-        initUserForm = UserForm "" "" True False [] initUserInfoForm [] ValidInputs 
+        initUserForm = UserForm "" "" False False [] initUserInfoForm [] ValidInputs
         initModel = Model flags.contextPath "" (fromList []) (fromList []) [] None initUserForm initUi [] Dict.empty
     in
     ( initModel

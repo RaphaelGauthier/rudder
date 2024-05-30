@@ -29,10 +29,22 @@ view model =
 
             else
                 div [] []
+
+        editPanel =
+            case model.ui.menuMode of
+                EditMode user tab ->
+                    displayRightPanel model user tab
+
+                AddMode ->
+                    displayMenuAddUser model
+
+                _ ->
+                    text ""
     in
     div [class "rudder-template"]
         [ deleteModal
         , content
+        , editPanel
         ]
 
 
@@ -83,7 +95,7 @@ hashPasswordMenu isHashedPasswd =
             else
                 ""
     in
-    div [ class "btn-group", attribute "role" "group" ]
+    div [ class "btn-group mb-2", attribute "role" "group" ]
         [ a [ class ("btn btn-default " ++ clearPasswdIsActivate), onClick (PreHashedPasswd False) ] [ text "Password to hash" ]
         , a [ class ("btn btn-default " ++ hashPasswdIsActivate), onClick (PreHashedPasswd True) ] [ text "Enter pre-hashed value" ]
         ]
@@ -142,7 +154,7 @@ displayPasswordBlock model user =
 
         passwdRequiredValidation =
             if isPasswordMandatory then
-                case model.ui.panelMode of
+                case model.ui.menuMode of
                     AddMode ->
                         if model.userForm.isValidInput == InvalidUsername then
                             "invalid-form-field"
@@ -159,16 +171,18 @@ displayPasswordBlock model user =
         passwordInput =
             [ h3 [] [ text "Password" ]
             , hashPasswordMenu model.userForm.isHashedPasswd
-            , input [ class ("form-control anim-show  " ++ classDeactivatePasswdInput ++ " " ++ passwdRequiredValidation), type_ isHidden, placeholder phMsg, onInput Password, attribute "autocomplete" "new-password", value model.userForm.password ] []
-            , hashType
+            , div [class "input-group"]
+              [ input [ class ("form-control anim-show  " ++ classDeactivatePasswdInput ++ " " ++ passwdRequiredValidation), type_ isHidden, placeholder phMsg, onInput Password, attribute "autocomplete" "new-password", value model.userForm.password ] []
+              , hashType
+              ]
             ]
 
         hashType =
             if model.userForm.isHashedPasswd then
-                div [ class "hash-block" ] [ i [ class "fa fa-key hash-icon" ] [], div [ class "hash-type" ] [ text model.digest ] ]
+                span [ class "input-group-text hash-block" ] [ i [ class "fa fa-key me-1" ] [], span [class "fw-bold"] [ text model.digest ] ]
 
             else
-                div [] []
+                text ""
     in
     if not isPasswordMandatory then
         div [ class "msg-providers" ]
@@ -195,8 +209,8 @@ displayPasswordBlock model user =
         div [] passwordInput
 
 
-displayRightPanelAddUser : Model -> Html Msg
-displayRightPanelAddUser model =
+displayMenuAddUser : Model -> Html Msg
+displayMenuAddUser model =
     let
         emptyUsername =
             if model.userForm.isValidInput == InvalidUsername then
@@ -205,26 +219,28 @@ displayRightPanelAddUser model =
             else
                 ""
     in
-    div [ class "panel-wrap" ]
-        [ div [ class "panel" ]
-            [ button [ class "btn btn-sm btn-outline-secondary", onClick DeactivatePanel ] [ text "Close" ]
-            , div [ class "card-header" ] [ h2 [ class "title-username" ] [ text "Create User" ] ]
-            , div []
-                [ input [ class ("form-control username-input " ++ emptyUsername), type_ "text", placeholder "Username", onInput Login, value model.userForm.login, required True ] []
-                , displayPasswordBlock model Nothing
-                , displayUserInfo model.userForm False
-                , div [ class "btn-container" ]
-                    [ button
-                        [ class "btn btn-sm btn-success btn-save"
-                        , type_ "button"
-                        , onClick (SubmitNewUser (userFormToNewUser model.userForm))
+        div [ class "menu-wrap" ]
+            [ div[class "menu-overlay"][]
+            , div [ class "menu col-4" ]
+                [ div [ class "menu-header d-flex justify-content-between mb-3" ]
+                    [ h2 [ class "title-username" ] [ text "Create User" ]
+                    , div [class "header-buttons"]
+                        [ button [ class "btn btn-default", onClick CloseMenu ] [ text "Close", i [ class "fa fa-times ms-1"][]]
+                        , button
+                            [ class "btn btn-success btn-save"
+                            , type_ "button"
+                            , onClick (SubmitNewUser (userFormToNewUser model.userForm))
+                            ]
+                            [ i [ class "fa fa-download" ] [] ]
                         ]
-                        [ i [ class "fa fa-download" ] [] ]
+                    ]
+                , div []
+                    [ input [ class ("form-control username-input " ++ emptyUsername), type_ "text", placeholder "Username", onInput Login, value model.userForm.login, required True ] []
+                    , displayPasswordBlock model Nothing
+                    , displayUserInfo model.userForm False
                     ]
                 ]
             ]
-        ]
-
 
 displayRoleListOverrideWarning : RoleListOverride -> Html Msg
 displayRoleListOverrideWarning rlo =
@@ -387,8 +403,8 @@ displayUserInfo userForm allowSaveInfo =
         )
 
 
-displayRightPanel : Model -> User -> Html Msg
-displayRightPanel model user =
+displayRightPanel : Model -> User -> EditTab -> Html Msg
+displayRightPanel model user tab =
     let
         -- Additional RO information
         rolesAuthzInformationSection =
@@ -492,11 +508,12 @@ displayRightPanel model user =
                 ]
             ]
     in
-    div [ class "panel-wrap" ]
-        [ div [ class "panel" ]
-            ([ div [ class "panel-header" ]
+    div [class "menu-wrap"]
+        [ div[class "menu-overlay"][]
+        , div [ class "menu col-4" ]
+            ([ div [ class "menu-header" ]
                 [ h2 [ class "title-username" ] (text user.login :: List.map (\x -> span [ class "providers" ] [ text x ]) user.providers)
-                , button [ class "btn btn-sm btn-outline-secondary", onClick DeactivatePanel ] [ text "Close" ]
+                , button [ class "btn btn-default float-end", onClick CloseMenu ] [ text "Close", i [ class "fa fa-times ms-1"][]]
                 , div [ class "user-last-login" ]
                     [ case user.lastLogin of
                         Nothing ->
@@ -506,8 +523,8 @@ displayRightPanel model user =
                             em [] [ text ("Last login: " ++ String.replace "T" " " l) ]
                     ]
                 ]
-             , displayPasswordBlock model (Just user)
-             ]
+            , displayPasswordBlock model (Just user)
+            ]
                 ++ displayedProviders
                 ++ (displayUserInfo model.userForm True :: rolesAuthzInformationSection)
             )
@@ -517,21 +534,6 @@ displayRightPanel model user =
 displayUsersConf : Model -> Users -> Html Msg
 displayUsersConf model u =
     let
-        newUserMenu =
-            if model.ui.panelMode == AddMode then
-                displayRightPanelAddUser model
-
-            else
-                text ""
-
-        panel =
-            case model.ui.panelMode of
-                EditMode user ->
-                    displayRightPanel model user
-
-                _ ->
-                    text ""
-
         hasExternal =
             isJust (takeFirstExtProvider model.providers)
 
@@ -573,7 +575,7 @@ displayUsersConf model u =
                 [ div [ class "template-main" ]
                     [ div [ class "main-container" ]
                         [ div [ class "main-details" ]
-                            [ button [ class "btn me-auto btn-success new-icon btn-add", onClick ActivePanelAddUser ] [ text "Create a user" ]
+                            [ button [ class "btn me-auto btn-success new-icon", onClick OpenAddMenu ] [ text "Create a user" ]
                             , div [ class "main-table" ]
                                 [ div [ class "table-container" ]
                                     [ div [ class "dataTables_wrapper_top table-filter" ]
@@ -602,8 +604,6 @@ displayUsersConf model u =
                         ]
                     ]
                 ]
-            , newUserMenu
-            , panel
         ]
 
 displayAddRole : Model -> User -> ProviderInfo -> Bool -> Bool -> List (Html Msg)
@@ -769,7 +769,7 @@ displayUsersTable model =
             , td []
               [ button
                 [ class "btn btn-default"
-                , onClick (ActivePanelSettings user)
+                , onClick (OpenEditMenu user)
                 ]
                 [ span [class "fa fa-pencil"] [] ]
               , label [for inputId, class "custom-toggle ms-2"]

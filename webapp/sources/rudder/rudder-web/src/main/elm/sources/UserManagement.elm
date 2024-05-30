@@ -7,7 +7,7 @@ import Http exposing (..)
 import String exposing (isEmpty)
 
 import UserManagement.ApiCalls exposing (activateUser, addUser, disableUser, getRoleConf, getUsersConf, postReloadConf, updateUser, updateUserInfo)
-import UserManagement.DataTypes exposing (AddUserForm, Model, Msg(..), PanelMode(..), StateInput(..), UserAuth, mergeUserNewInfo, userProviders)
+import UserManagement.DataTypes exposing (AddUserForm, Model, Msg(..), MenuMode(..), StateInput(..), UserAuth, mergeUserNewInfo, userProviders, EditTab(..))
 import UserManagement.Init exposing (init, subscriptions)
 import UserManagement.View exposing (view)
 
@@ -36,18 +36,18 @@ update msg model =
                         recordUser =
                             List.map (\x -> (x.login, x)) u.users
                         users = fromList recordUser
-                        newPanelMode =
-                            case model.ui.panelMode of
-                                EditMode user ->
+                        newMenuMode =
+                            case model.ui.menuMode of
+                                EditMode user tab ->
                                     case Dict.get user.login users of
                                         Just u_ ->
-                                            EditMode u_
+                                            EditMode u_ tab
                                         Nothing ->
                                             Closed
                                 _ ->
                                     Closed
                         ui = model.ui
-                        newUI = {ui | panelMode = newPanelMode} 
+                        newUI = {ui | menuMode = newMenuMode}
                         newModel =
                             { model | roleListOverride = u.roleListOverride, users = users, ui = newUI, digest = u.digest, providers = (userProviders u.authenticationBackends), providersProperties = u.providersProperties}
 
@@ -81,23 +81,23 @@ update msg model =
         SendReload ->
             (model, Cmd.batch [ postReloadConf model, successNotification "User configuration file have been reloaded" ])
 
-        ActivePanelAddUser ->
-            if model.ui.panelMode == AddMode then
-                (resetFormPanel model Closed, Cmd.none)
+        OpenAddMenu ->
+            if model.ui.menuMode == AddMode then
+                (resetMenu model Closed, Cmd.none)
             else
-                (resetFormPanel model AddMode, Cmd.none)
-        ActivePanelSettings user ->
-            case model.ui.panelMode of
-                EditMode u ->
+                (resetMenu model AddMode, Cmd.none)
+        OpenEditMenu user ->
+            case model.ui.menuMode of
+                EditMode u t->
                     if u.login == user.login then
-                        (resetFormPanel model Closed, Cmd.none)
+                        (resetMenu model Closed, Cmd.none)
                     else
-                        (resetFormPanel model (EditMode user), Cmd.none)
+                        (resetMenu model (EditMode user t), Cmd.none)
                 _          ->
-                    (resetFormPanel model (EditMode user), Cmd.none)
+                    (resetMenu model (EditMode user RightsTab), Cmd.none)
 
-        DeactivatePanel ->
-            (resetFormPanel model Closed, Cmd.none)
+        CloseMenu ->
+            (resetMenu model Closed, Cmd.none)
 
         AddUser result ->
              case result of
@@ -110,7 +110,7 @@ update msg model =
              case result of
                   Ok deletedUser ->
                        let
-                           newModel = resetFormPanel model Closed
+                           newModel = resetMenu model Closed
                        in
                            (newModel, Cmd.batch [ getUsersConf model, successNotification (deletedUser ++ " have been deleted") ])
                   Err err ->
@@ -162,9 +162,9 @@ update msg model =
                                     newRoles
                                     |> List.any (\y -> List.member y allAuthz)
                         ) user.authz
-                newPanelMode = EditMode {user | authz = newAuthz, roles = newRoles}
+                newMenuMode = EditMode {user | authz = newAuthz, roles = newRoles} RightsTab
                 ui = model.ui
-                newUI = {ui | panelMode = newPanelMode}
+                newUI = {ui | menuMode = newMenuMode}
             in
             ({model | ui = newUI}, updateUser model user.login (UserAuth user.login "" (newAuthz ++ newRoles) model.userForm.isHashedPasswd))
 
@@ -250,12 +250,12 @@ update msg model =
                 ({model | userForm = newUserForm}, Cmd.none)
         SubmitUpdateUser u ->
             let
-                newModel = resetFormPanel model model.ui.panelMode
+                newModel = resetMenu model model.ui.menuMode
             in
                 (newModel, updateUser model u.login u)
         SubmitUserInfo ->
             let
-                newModel = resetFormPanel model model.ui.panelMode
+                newModel = resetMenu model model.ui.menuMode
             in
                 (newModel, updateUserInfo model model.userForm.login (mergeUserNewInfo model.userForm))
         SubmitNewUser u  ->
@@ -267,7 +267,7 @@ update msg model =
                     ({model | userForm = newUserForm}, Cmd.none)
             else
                 let
-                    newModel = resetFormPanel model Closed
+                    newModel = resetMenu model Closed
                 in
                     (newModel, addUser model (AddUserForm u model.userForm.password model.userForm.isHashedPasswd))
         ActivateUser username ->
@@ -325,23 +325,23 @@ processApiError _ model =
     in
     ( newModel, errorNotification "Error while trying to fetch settings.")
 
-resetFormPanel : Model -> PanelMode -> Model
-resetFormPanel model panelMode =
+resetMenu : Model -> MenuMode -> Model
+resetMenu model menuMode =
     let
         currentUserForm = model.userForm
         newLogin = 
-            case panelMode of
-                EditMode user -> user.login
+            case menuMode of
+                EditMode user tab -> user.login
                 _ -> ""
         newFields = 
-            case panelMode of
-                EditMode user -> 
+            case menuMode of
+                EditMode user tab ->
                     if user.login == currentUserForm.login then
                         mergeUserNewInfo currentUserForm
                     else
                         { name = user.name, email = user.email, otherInfo = user.otherInfo }
                 _ -> { name = "", email = "", otherInfo = Dict.empty }
-        newUI = { panelMode = panelMode, openDeleteModal = False, tableFilters = model.ui.tableFilters}
+        newUI = { menuMode = menuMode, openDeleteModal = False, tableFilters = model.ui.tableFilters}
         newUserInfoForm = 
             { name = newFields.name
             , email = newFields.email
@@ -350,7 +350,7 @@ resetFormPanel model panelMode =
         newUserForm = 
             { login = newLogin
             , password = ""
-            , isHashedPasswd = True
+            , isHashedPasswd = False
             , userForcePasswdInput = False
             , rolesToAddOnSave = []
             , newUserInfoFields = []
