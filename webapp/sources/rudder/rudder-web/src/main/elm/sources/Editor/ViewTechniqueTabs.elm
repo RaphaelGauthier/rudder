@@ -113,7 +113,7 @@ techniqueParameter model technique param =
       , div [ class " form-group" ] [
           label [  for varId] [ text "Variable name"]
         , div [class "input-group" ] [
-            input [id  varId, readonly (not model.hasWriteRights), type_ "text",  class ("form-control "++invalidParamClass), value param.name, placeholder (if (Maybe.Extra.isNothing param.description) then "Variable name" else (canonifyString (Maybe.withDefault "" param.description))) , onInput (\s -> TechniqueParameterModified param.id {param | name = s }), required True] []
+            input [id  varId, readonly (not model.hasWriteRights), type_ "text",  class (invalidNameClass ++ " form-control "++ invalidParamClass ), value param.name, placeholder (if (Maybe.Extra.isNothing param.description) then "Variable name" else (canonifyString (Maybe.withDefault "" param.description))) , onInput (\s -> TechniqueParameterModified param.id {param | name = s }), required True] []
           , button [ class "btn btn-outline-secondary clipboard", title "Copy to clipboard" , onClick (Copy ("${" ++ param_var_name ++ "}")) ] [
               i [ class "ion ion-clipboard" ] []
             ]

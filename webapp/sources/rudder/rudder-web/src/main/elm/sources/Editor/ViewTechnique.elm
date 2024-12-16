@@ -330,6 +330,19 @@ showTechnique model technique origin ui editInfo =
       in
         button [class ("btn btn-success btn-save" ++ (if saving then " saving" else "")), type_ "button", disabled (saving || disable), onClick action]
         [ icon ]
+
+    disableConditions =
+        ( isUnchanged
+        || not (isValid technique ui)
+        || String.isEmpty technique.name
+        || isMethodListEmpty
+        || not areErrorOnMethodParameters
+        || not areErrorOnMethodCondition
+        || not areBlockOnError
+        || isEnumListIsEmpty
+        || isEnumWithEmptyName
+        || isEnumWithEmptyValue
+        )
   in
     div [ class "main-container" ] [
       div [ class "main-header" ] [
@@ -352,7 +365,7 @@ showTechnique model technique origin ui editInfo =
               text (if (editInfo.open) then "Visual editor " else "YAML editor")
             , i [ class "fa fa-pen"] []
             ]
-          , btnSave ui.saving (isUnchanged || not (isValid technique ui) || String.isEmpty technique.name || isMethodListEmpty || not areErrorOnMethodParameters || not areErrorOnMethodCondition || not areBlockOnError || isEnumListIsEmpty || isEnumWithEmptyName || isEnumWithEmptyValue) StartSaving
+          , btnSave ui.saving disableConditions StartSaving
           ]
         ]
       ]
